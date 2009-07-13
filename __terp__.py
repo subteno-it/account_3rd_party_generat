@@ -52,6 +52,7 @@ Lats-upadte: 2009-06-04
     ],
     "update_xml" : [
         "account_seq.xml",
+        "install_wizard.xml",
     ],
     "demo_xml" : [],
     "active": False,

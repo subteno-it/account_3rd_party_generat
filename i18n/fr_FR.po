@@ -1,0 +1,106 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* account_3rd_party_generat
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 5.0.1\n"
+"Report-Msgid-Bugs-To: support@openerp.com\n"
+"POT-Creation-Date: 2009-07-13 14:20:28+0000\n"
+"PO-Revision-Date: 2009-07-13 16:24+0100\n"
+"Last-Translator: Claude BRULE <Claude.Brule@Syleam.fr>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: account_3rd_party_generat
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture!"
+msgstr "XML non valide pour l'architecture de la vue"
+
+#. module: account_3rd_party_generat
+#: field:wizard.install.third.part.accounts,payable_id:0
+msgid "Account payable"
+msgstr "Compte fournisseur"
+
+#. module: account_3rd_party_generat
+#: view:wizard.install.third.part.accounts:0
+msgid "Account number"
+msgstr "Numéro de compte"
+
+#. module: account_3rd_party_generat
+#: view:wizard.install.third.part.accounts:0
+msgid "Accounts Generate"
+msgstr "Génération des comptes de tiers"
+
+#. module: account_3rd_party_generat
+#: model:ir.module.module,description:account_3rd_party_generat.module_meta_information
+msgid ""
+".\n"
+"This module is automaticaly create account number in chat of account according to the partner.\n"
+"If partner is customer it generate third party account and associate this new accoun to partner.\n"
+"The same is also done for suppliers.\n"
+"\n"
+"Credit :\n"
+"   EverLibre, Zeekom, Syleam\n"
+"\n"
+"Lats-upadte: 2009-06-04\n"
+msgstr ""
+".\n"
+"This module is automaticaly create account number in chat of account according to the partner.\n"
+"If partner is customer it generate third party account and associate this new accoun to partner.\n"
+"The same is also done for suppliers.\n"
+"\n"
+"Credit :\n"
+"   EverLibre, Zeekom, Syleam\n"
+"\n"
+"Lats-upadte: 2009-06-04\n"
+
+#. module: account_3rd_party_generat
+#: field:wizard.install.third.part.accounts,company_id:0
+msgid "Company"
+msgstr "Société"
+
+#. module: account_3rd_party_generat
+#: model:ir.actions.act_window,name:account_3rd_party_generat.action_third_part_account
+#: model:ir.actions.todo,note:account_3rd_party_generat.config_third_part_account
+msgid "Configure third party account rules"
+msgstr "Configurer la règle de création des comptes de tiers"
+
+#. module: account_3rd_party_generat
+#: view:wizard.install.third.part.accounts:0
+msgid "Update"
+msgstr "Mettre à jour"
+
+#. module: account_3rd_party_generat
+#: model:ir.module.module,shortdesc:account_3rd_party_generat.module_meta_information
+msgid "third parties account number generation"
+msgstr "Génération automatique des comptes de tiers"
+
+#. module: account_3rd_party_generat
+#: model:ir.model,name:account_3rd_party_generat.model_wizard_install_third_part_accounts
+msgid "wizard.install.third.part.accounts"
+msgstr "wizard.install.third.part.accounts"
+
+#. module: account_3rd_party_generat
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr "Nom du Modèle non valide pour la définition de l'action."
+
+#. module: account_3rd_party_generat
+#: view:wizard.install.third.part.accounts:0
+msgid "Cancel"
+msgstr "Annuler"
+
+#. module: account_3rd_party_generat
+#: constraint:ir.model:0
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr "Le nom de l'objet doit commencer avec x_ et ne pas contenir de charactères spéciaux !"
+
+#. module: account_3rd_party_generat
+#: field:wizard.install.third.part.accounts,receivable_id:0
+msgid "Account receivable"
+msgstr "Compte client"
+

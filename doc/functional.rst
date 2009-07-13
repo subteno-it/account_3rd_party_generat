@@ -6,8 +6,8 @@ As the partner is flag as customer or supplier, it generate the appropriate acco
 This is based on sequences to have benefits of prefix (E.g. root of account number), suffix and increments.
 It uses ir.properties (witch already exist and are setted by default) as originals accounts numbers and duplicate it (keeping same parameters).
 
-The sequence is a kind of parameter value. You can use partner fields (between %) witch will be replaced bu corresponding values.
-E.g. %ref% will be replaced by partner.ref (the code of partner)
+The sequence is a kind of parameter value. You can use partner fields (between {}) witch will be replaced bu corresponding values.
+E.g. {ref} will be replaced by partner.ref (the code of partner)
 
 You can also use modificators between pipes (|) modify the above replaced value.
 Modificators are : 
@@ -24,6 +24,6 @@ Modificators are :
  * zfill4 : padding left with 0 (until length = four)
  * zfill6 : padding left with 0 (until length = four)
 
-Modificators can joined.
-E.g. %name|truncate4|capital%
+Modificators can be joined.
+E.g. {name|truncate4|capital}
 

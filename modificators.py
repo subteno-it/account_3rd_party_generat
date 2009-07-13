@@ -26,6 +26,11 @@
 # 20090603  SYLEAM/CB   modificators
 #
 ##############################################################################
+#   TECHNICAL DETAILS : 
+#        'code': fields.char('Code', size=64)
+##############################################################################
+
+
 import string
 
 
@@ -60,13 +65,18 @@ class Modificator(object):
     def truncate2(self):
         return self.strVal[:2]
 
+    def truncate3(self):
+        return self.strVal[:3]
+
     def truncate4(self):
-#        print "DEBUG: Modificator::truncate4 --> %r" % self.strVal[:4]
         return self.strVal[:4]
 
     def truncate6(self):
 #        print "DEBUG: Modificator::truncate6 --> %r" % self.strVal[:6]
         return self.strVal[:6]
+
+    def truncate12(self):
+        return self.strVal[:12]
 
     def charnum(self):
         first_letter = self.strVal[0]
