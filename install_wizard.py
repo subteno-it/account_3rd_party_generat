@@ -31,6 +31,8 @@
 ##############################################################################
 from osv import fields,osv,orm
 import tools    #for translations
+import types
+
 
 class wizard_install_third_part_accounts(osv.osv_memory):
     """
@@ -46,22 +48,24 @@ class wizard_install_third_part_accounts(osv.osv_memory):
     }
 
 
-    def _default_receivable_id(self, cr, uid, context={}):
-        receivable_id = self.pool.get('account.account.type').search(cr, uid, [('code','=','receivable')])
-        srch_args = [('type', '=', 'view'),('user_type','in',receivable_id)]
-        account_id = self.pool.get('account.account').search(cr, uid, srch_args)[0]    #, limit=1, order='code')
+    def _default_account_id(self, cr, uid, account_type, context={}):
+        account_type_id = self.pool.get('account.account.type').search(cr, uid, [('code','=',account_type)])    #, context
+        srch_args = [('type', '=', 'view'),('user_type','in',account_type_id)]
+        account_id = self.pool.get('account.account').search(cr, uid, srch_args)    #[0]    #, limit=1, order='code')
         if account_id:
-            return account_id[0]
+            if type(account_id) is types.IntType:
+                return account_id
+            elif type(account_id) is types.ListType:
+                return account_id[0]
         return False
 
+    def _default_receivable_id(self, cr, uid, context={}):
+        receivable_id = self._default_account_id(cr, uid,'receivable', context)
+        return receivable_id
 
     def _default_payable_id(self, cr, uid, context={}):
-        payable_id = self.pool.get('account.account.type').search(cr, uid, [('code','=','payable')])
-        srch_args = [('type', '=', 'view'),('user_type','in',payable_id)]
-        account_id = self.pool.get('account.account').search(cr, uid, srch_args)
-        if account_id:
-            return account_id[0]
-        return False
+        payable_id = self._default_account_id(cr, uid, 'payable', context)
+        return payable_id
 
 
     _defaults = {
@@ -88,7 +92,6 @@ class wizard_install_third_part_accounts(osv.osv_memory):
                 vals = {
                     'value': record[3] and 'account.account,'+str(record[3]) or False,
                 }
-                print "DEBUG: write = %r" % vals
                 property_obj.write(cr, uid, r, vals)
             else:   #create the property
                 field = fields_obj.search(cr, uid, [('name','=',record[0]),('model','=',record[1]),('relation','=',record[2])])
@@ -98,7 +101,6 @@ class wizard_install_third_part_accounts(osv.osv_memory):
                     'fields_id': field[0],
                     'value': record[3] and 'account.account,'+str(record[3]) or False,
                 }
-                print "DEBUG: create = %r" % vals
                 property_obj.create(cr, uid, vals)
         next_action = {
             'type': 'ir.actions.act_window',
