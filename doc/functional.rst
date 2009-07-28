@@ -14,16 +14,18 @@ Modificators are :
  * rmspace : remove all spaces
  * rmponct : remove special characters
  * rmaccent : convert characters with accent in characeters with no accent
+ * rmspe : keep only letters
  * truncate1 : keep first character
  * truncate2 : cut after second character
  * truncate4 : four first characters
  * truncate6 : six first characters
- * charnum : return number of alphabetic character (F is 06)
+ * charnum : return number of alphabetic character (Eg: G is 07)
  * capitalize : transforme in upper case
+ * lower : transforme in lower case
  * zfill2 : padding left with 0
  * zfill4 : padding left with 0 (until length = four)
  * zfill6 : padding left with 0 (until length = four)
 
 Modificators can be joined.
-E.g. {name|truncate4|capital}
+E.g. {name|truncate4|capitalize}
 

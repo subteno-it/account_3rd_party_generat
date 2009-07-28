@@ -42,8 +42,13 @@ class Modificator(object):
     def setval(self, strVal):
         self.strVal = strVal
                 
+
     def rmspace(self):
-        return self.strVal.replace(' ','')
+        #return self.strVal.replace(' ','')
+        return self.strVal.strip()
+
+    def strip(self):
+        return self.strVal.strip()
 
     def rmponct(self):
         newval = self.strVal
@@ -52,12 +57,17 @@ class Modificator(object):
         return newval
 
     def rmaccent(self):
+        #see also : from string import maketrans || string.translate
         newval = self.strVal.encode('utf-8')
         oldchar = "àäâéèëêïîöôüûùÿÄÂËÊÏÎÖÔÜÛ".decode('utf-8')
         newchar = "aaaeeeeiioouuuyAAEEIIOOUU"
         for i in range(len(oldchar)):
             newval = newval.replace(oldchar[i].encode('utf-8'), newchar[i])
         return newval
+
+    def rmspe(self):
+        allowed_chars = string.letters + string.digits
+        return ''.join(c for c in self.strVal if c in allowed_chars)
 
     def truncate1(self):
         return self.strVal[:1]
@@ -89,6 +99,15 @@ class Modificator(object):
     def capitalize(self):
 #        print "DEBUG: Modificator::capitalize --> %r" % self.strVal.upper()
         return self.strVal.upper()
+    def upper(self):
+        return self.strVal.upper()
+    def uppercase(self):
+        return self.strVal.upper()
+
+    def lower(self):
+        return self.strVal.lower()
+    def lowercase(self):
+        return self.strVal.lower()
 
     def zfill2(self):
         return self.strVal.zfill(2)
