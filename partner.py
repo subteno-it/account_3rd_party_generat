@@ -95,17 +95,14 @@ class res_partner(osv.osv):
 
         @return: (browse/id) the account (object)
         """
-##        print "_get_account_model(%r)" % model_name
         property_obj = self.pool.get('ir.property')
 #FIXME OpenERP is creating bad properties with res_id setted, so by luck we can retreive the original one
         property_id = property_obj.search(cr, uid, [('name','=', model_name),('res_id','=',False)])
         if not property_id or len(property_id) != 1:
-            print "_get_account_model : property_id = %r" % property_id
-            raise osv.except_osv(_('Error !'),_('You need to define ONE default account number in properties for %s' % model_name))
+            #raise osv.except_osv(_('Error !'),_('You need to define ONE default account number in properties for %s' % model_name))
+            return False
         property_data = self.pool.get('ir.property').browse(cr,uid, property_id)[0]
-##        print "_get_account_model : %r" % property_data
         account_id = int(property_data.value.split(',')[1])
-##        print "_get_account_model : account_id=%r" % account_id
         account_data = self.pool.get('account.account').browse(cr,uid, account_id)
         return account_data
 
@@ -163,6 +160,8 @@ class res_partner(osv.osv):
         @return: (dict) the account values
         """
         parent_account = self._get_account_model(cr, uid, 'property_account_receivable')
+        if not parent_account:
+            return False
         customer_account_model = self._get_data_account_model(parent_account)
         customer_account_model['type'] = 'receivable'
         return customer_account_model
@@ -185,6 +184,8 @@ class res_partner(osv.osv):
         @return: (dict) the account values
         """
         parent_account = self._get_account_model(cr, uid, 'property_account_payable')
+        if not parent_account:
+            return False
         supplier_account_model = self._get_data_account_model(parent_account)
         supplier_account_model['type'] = 'payable'
         return supplier_account_model
@@ -209,7 +210,6 @@ class res_partner(osv.osv):
 
 
     def write(self, cr, uid, ids, vals, context={}):
-        print "DEBUG: res.partner::write(%r, %r, %r)" % (ids, vals, context)
         # Update all ids (batch way)
         osv_stuff = super(res_partner, self).write(cr, uid, ids, vals, context)
         for id in ids:
@@ -217,7 +217,7 @@ class res_partner(osv.osv):
             partner = self.browse(cr, uid, [id])[0]
         # Customer account number
             default_receivable_account = self._get_account_model(cr, uid, 'property_account_receivable')
-            if partner.customer and (partner.property_account_receivable.id == default_receivable_account.id):
+            if default_receivable_account and partner.customer and (partner.property_account_receivable.id == default_receivable_account.id):
                 account_patern = self._get_customer_account_model(cr, uid)
                 account_code = self._get_compute_account_number(cr, uid, partner, self._get_customer_account_sequence(cr, uid) )
                 account_patern['name'] = str( _('Customer : ') + partner.name.encode("utf-8"))[:128]   #becarefull on translat° & length
@@ -226,7 +226,7 @@ class res_partner(osv.osv):
                 super(res_partner, self).write(cr, uid, id, {'property_account_receivable': customer_account_id} )
         # Supplier account number
             default_payable_account = self._get_account_model(cr, uid, 'property_account_payable')
-            if partner.supplier and (partner.property_account_payable.id == default_payable_account.id):
+            if default_payable_account and partner.supplier and (partner.property_account_payable.id == default_payable_account.id):
                 account_patern = self._get_supplier_account_model(cr, uid)
                 account_code = self._get_compute_account_number(cr, uid, partner, self._get_supplier_account_sequence(cr, uid) )
                 account_patern['name'] = str( _('Supplier : ') + partner.name.encode("utf-8"))[:128]   #becarefull on translat° & length

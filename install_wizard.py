@@ -77,7 +77,7 @@ class wizard_install_third_part_accounts(osv.osv_memory):
 
 
     def action_start_install(self, cr, uid, ids, context=None):
-        """ Create the properties : spécify 
+        """ Create the properties : specify default account (payable and receivable) for partners
         """
         wiz_data = self.browse(cr,uid,ids[0])
         todo_list = [
