@@ -36,6 +36,26 @@ from modificators import *
 class res_partner(osv.osv):
     _inherit = 'res.partner'
 
+    def _get_move_line(self, cr, uid, ids, name, args, context=None):
+        """Check if there is account move for this account
+        """
+        if not context:
+            context = {}
+        res={}
+        if not ids:
+            return False
+        for part in self.pool.get('res.partner').browse(cr, uid, ids):
+            mvt = self.pool.get('account.move.line').search(cr, uid, [('account_id', 'in', (part.property_account_payable.id, part.property_account_receivable.id))], 0, 1)
+            if mvt:
+                res[part.id]=True
+            else:
+               res[part.id]=False
+        return res
+
+    _columns = {
+         'account_move': fields.function(_get_move_line, method=True, type='boolean',  string='Moved'),
+    }
+
     _defaults = {
         'customer': lambda *a: 0,   # Do not compute account number if not necessary
     }

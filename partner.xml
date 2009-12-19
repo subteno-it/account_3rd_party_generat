@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="res_partner_form_account_generationname" model="ir.ui.view">
+            <field name="name">res.partner.form.account_generationname</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="name" position="replace">
+                    <field name="name"  attrs="{'readonly': [('account_move','=',True)]}" select="1"/>    
+                </field>
+            </field>
+        </record>
+        <record id="res_partner_form_account_generationref" model="ir.ui.view">
+            <field name="name">res.partner.form.account_generationref</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="ref" position="replace">
+                    <field name="ref"  attrs="{'readonly': [('account_move','=',True)]}" select="1"/>    
+                </field>
+            </field>
+        </record>
+
+        <record id="res_partner_form_account_generationreceivable" model="ir.ui.view">
+            <field name="name">res.partner.form.account_generationreceivable</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="property_account_receivable" position="replace">
+                    <field name="property_account_receivable"  attrs="{'readonly': [('account_move','=',True)]}" select="1"/>    
+                </field>
+            </field>
+        </record>
+
+        <record id="res_partner_form_account_generationpayable" model="ir.ui.view">
+            <field name="name">res.partner.form.account_generationpayable</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="property_account_payable" position="replace">
+                    <field name="property_account_payable"  attrs="{'readonly': [('account_move','=',True)]}" select="1"/>    
+                    <field name="account_move" />
+                </field>
+            </field>
+        </record>
+
+    </data>
+</openerp>
+

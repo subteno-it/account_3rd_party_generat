@@ -26,6 +26,7 @@
 #
 ##############################################################################
 #   AUTHOR : Claude Brulé for SISTHEO
+#   AUTHOR : Eric VERNICHON for SISTHEO
 ##############################################################################
 
 {
@@ -53,6 +54,7 @@ Lats-upadte: 2009-06-04
     "update_xml" : [
         "account_seq.xml",
         "install_wizard.xml",
+        "partner.xml",
     ],
     "demo_xml" : [],
     "active": False,
