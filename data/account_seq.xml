@@ -3,7 +3,7 @@
     <data noupdate="1">
 
 <!--
-	Sequences types for invoices
+	Sequences types for customers and suppliers accounts
 -->
         <record model="ir.sequence.type" id="seq_type_partner_third_part">
             <field name="name">Account third part</field>
@@ -11,7 +11,7 @@
         </record>
         
 <!--
-	Sequences for invoices
+	Sequences for customers and suppliers accounts
 -->
         <record model="ir.sequence" id="seq_supplier_account">
             <field name="name">Supplier account</field>
