@@ -88,9 +88,7 @@ class res_partner(osv.osv):
                     mdf_funct = getattr(mdf, ar_args[i])
                     partner_value = mdf_funct()
                     mdf.setval(partner_value)
-                account_number = prefix + partner_value + suffix
-            else:
-                account_number = prefix + suffix
+            account_number = "%s%s%s" (prefix or '', partner_value or '', suffix or '')
         else:
             account_number = seq_patern
 
