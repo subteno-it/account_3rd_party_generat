@@ -247,6 +247,7 @@ class res_partner(osv.osv):
                 account_code = self._get_compute_account_number(cr, uid, partner, self._get_customer_account_sequence(cr, uid) )
                 account_patern['name'] = str( _('Customer : ') + partner.name.encode("utf-8"))[:128]   #becarefull on translat° & length
                 account_patern['code'] = account_code
+                debug(account_patern)
                 customer_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
                 super(res_partner, self).write(cr, uid, id, {'property_account_receivable': customer_account_id} )
         # Supplier account number
@@ -256,6 +257,7 @@ class res_partner(osv.osv):
                 account_code = self._get_compute_account_number(cr, uid, partner, self._get_supplier_account_sequence(cr, uid) )
                 account_patern['name'] = str( _('Supplier : ') + partner.name.encode("utf-8"))[:128]   #becarefull on translat° & length
                 account_patern['code'] = account_code
+                debug(account_patern)
                 supplier_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
                 super(res_partner, self).write(cr, uid, id, {'property_account_payable': supplier_account_id} )
 
