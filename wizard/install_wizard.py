@@ -19,16 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-#   AIM :   
-#           install module / create defaults parameters
-#
-##############################################################################
-# Date      Author      Description
-# 20090713  SYLEAM/CB   update default 3rd part account numbers
-#
-##############################################################################
-#   TECHNICAL DETAILS : 
-##############################################################################
 from osv import fields,osv,orm
 import tools    #for translations
 import types
@@ -41,8 +31,6 @@ class wizard_install_third_part_accounts(osv.osv_memory):
 
     _columns = {
         'company_id': fields.many2one('res.company', 'Company', required=True),
-#        'code_digits': fields.integer('# of Digits',required=True,help="No. of Digits to use for account code"),
-#        'seq_journal': fields.boolean('Separated Journal Sequences',help="Check this box if you want to use a different sequence for each created journal. Otherwise, all will use the same sequence."),
         'receivable_id': fields.many2one('account.account', 'Account receivable', domain="[('type', '=', 'view')]", required=True),     #,('user_type','=','receivable')
         'payable_id': fields.many2one('account.account', 'Account payable', domain="[('type', '=', 'view')]", required=True),
     }
@@ -59,6 +47,7 @@ class wizard_install_third_part_accounts(osv.osv_memory):
                 return account_id[0]
         return False
 
+
     def _default_receivable_id(self, cr, uid, context={}):
         receivable_id = self._default_account_id(cr, uid,'receivable', context)
         return receivable_id
@@ -70,45 +59,56 @@ class wizard_install_third_part_accounts(osv.osv_memory):
 
     _defaults = {
         'company_id': lambda self, cr, uid, c: self.pool.get('res.users').browse(cr,uid,[uid],c)[0].company_id.id,
-#        'code_digits': lambda *a:6,
         'receivable_id': _default_receivable_id,
         'payable_id': _default_payable_id,
     }
 
 
+    def _set_property(self, cr, uid, prop_name, prop_account_id, company_id):
+        """ Set/Reset default properties
+        """
+        property_obj = self.pool.get('ir.property')
+        prp_ids = property_obj.search(cr, uid, [('name','=', prop_name ),('company_id','=',company_id)])
+#FIXME Add critéria to find only 1 record
+        if prp_ids:
+            if len(prp_ids) == 1:   #the property exist: modify it
+                vals = {
+                    'value': prop_account_id and 'account.account,' + str(prop_account_id) or False,
+                }
+                out_id = prp_ids[0]
+                property_obj.write(cr, uid, [out_id], vals)
+            else:
+#FIXME Over write the nly record that have res = NULL
+                out_id = False
+                pass    # DO NOTHING / DO NOT CHANGE EXISTING DATAS
+        else:   #create the property
+            fields_obj = self.pool.get('ir.model.fields')
+            field_ids = fields_obj.search(cr, uid, [('name','=',prop_name),('model','=','res.partner'),('relation','=','account.account')])
+            vals = {
+                'name': prop_name,
+                'company_id': company_id,
+                'fields_id': field_ids[0],
+                'value': prop_account_id and 'account.account,' + str(prop_account_id) or False,
+            }
+            out_id = property_obj.create(cr, uid, vals)
+        return out_id
+
+
     def action_start_install(self, cr, uid, ids, context=None):
         """ Create the properties : specify default account (payable and receivable) for partners
         """
-        wiz_data = self.browse(cr,uid,ids[0])
-        todo_list = [
-            ('property_account_receivable','res.partner','account.account', wiz_data.receivable_id.id),
-            ('property_account_payable','res.partner','account.account', wiz_data.payable_id.id),
-        ]
-        property_obj = self.pool.get('ir.property')
-        fields_obj = self.pool.get('ir.model.fields')
-        for record in todo_list:
-            r = property_obj.search(cr, uid, [('name','=', record[0] ),('company_id','=',wiz_data.company_id.id)])
-            if r:   #the property exist: modify it
-                vals = {
-                    'value': record[3] and 'account.account,'+str(record[3]) or False,
-                }
-                property_obj.write(cr, uid, r, vals)
-            else:   #create the property
-                field = fields_obj.search(cr, uid, [('name','=',record[0]),('model','=',record[1]),('relation','=',record[2])])
-                vals = {
-                    'name': record[0],
-                    'company_id': wiz_data.company_id.id,
-                    'fields_id': field[0],
-                    'value': record[3] and 'account.account,'+str(record[3]) or False,
-                }
-                property_obj.create(cr, uid, vals)
+        wiz_data = self.browse(cr, uid, ids[0])
+        print "DEBUG: wizard_install_third_part_accounts > wiz_data = %r" % wiz_data
+        self._set_property(cr, uid, 'property_account_receivable', wiz_data.receivable_id and wiz_data.receivable_id.id, wiz_data.company_id and wiz_data.company_id.id)
+        self._set_property(cr, uid, 'property_account_payable', wiz_data.payable_id and wiz_data.payable_id.id, wiz_data.company_id and wiz_data.company_id.id)
+
         next_action = {
             'type': 'ir.actions.act_window',
             'res_model': 'ir.actions.configuration.wizard',
             'view_type': 'form',
             'view_mode': 'form',
             'target':'new',
-       }
+        }
         return next_action
 
 
