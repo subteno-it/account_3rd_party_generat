@@ -31,6 +31,7 @@
 from osv import fields, osv
 from tools.translate import _
 from modificators import *
+from tools.misc import debug
 
 
 class res_partner(osv.osv):
@@ -45,6 +46,8 @@ class res_partner(osv.osv):
         if not ids:
             return False
         for part in self.pool.get('res.partner').browse(cr, uid, ids):
+            debug(part.property_account_payable.name)
+            debug(part.property_account_receivable.name)
             mvt = self.pool.get('account.move.line').search(cr, uid, [('account_id', 'in', (part.property_account_payable.id, part.property_account_receivable.id))], 0, 1)
             if mvt:
                 res[part.id]=True
