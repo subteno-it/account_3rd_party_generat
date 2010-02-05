@@ -48,11 +48,15 @@ class res_partner(osv.osv):
         for part in self.pool.get('res.partner').browse(cr, uid, ids):
             debug(part.property_account_payable.name)
             debug(part.property_account_receivable.name)
-            mvt = self.pool.get('account.move.line').search(cr, uid, [('account_id', 'in', (part.property_account_payable.id, part.property_account_receivable.id))], 0, 1)
-            if mvt:
-                res[part.id]=True
-            else:
-               res[part.id]=False
+            res[part.id]=False
+            if part.property_account_receivable:
+                mvt = self.pool.get('account.move.line').search(cr, uid, [('account_id', '=', part.property_account_receivable.id)], 0, 1)
+                if mvt:
+                    res[part.id]=True
+            if part.property_account_payable:
+                mvt = self.pool.get('account.move.line').search(cr, uid, [('account_id', '=', part.property_account_payable.id)], 0, 1)
+                if mvt:
+                    res[part.id]=True
         return res
 
     _columns = {
