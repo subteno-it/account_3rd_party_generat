@@ -5,7 +5,7 @@
             <field name="name">res.partner.form.account_generation_name</field>
             <field name="model">res.partner</field>
             <field name="type">form</field>
-            <field name="priority">64</field>
+            <field name="priority">32</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <field name="name" position="replace">
@@ -18,7 +18,7 @@
             <field name="model">res.partner</field>
             <field name="type">form</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
-            <field name="priority">64</field>
+            <field name="priority">32</field>
             <field name="arch" type="xml">
                 <field name="ref" position="replace">
                     <field name="ref"  attrs="{'readonly': [('account_move','=',True)]}" select="1"/>    
