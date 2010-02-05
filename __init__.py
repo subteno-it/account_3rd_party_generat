@@ -26,7 +26,7 @@
 #
 ##############################################################################
 
-import partner
-import install_wizard
+import object
+import wizard
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -52,9 +52,9 @@ Lats-upadte: 2009-06-04
     "init_xml" : [
     ],
     "update_xml" : [
-        "account_seq.xml",
-        "install_wizard.xml",
-        "partner.xml",
+        "data/account_seq.xml",
+        "wizard/install_wizard.xml",
+        "view/partner.xml",
     ],
     "demo_xml" : [],
     "active": False,
