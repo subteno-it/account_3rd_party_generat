@@ -110,6 +110,7 @@ class Modificator(object):
         return self.strVal.lower()
 
     def zfill2(self):
+        """ Fill with 0 on the left. """
         return self.strVal.zfill(2)
 
     def zfill4(self):
@@ -117,4 +118,23 @@ class Modificator(object):
 
     def zfill6(self):
         return self.strVal.zfill(6)
+
+    def rfill2(self):
+        """ Fill with 0 on the right. """
+        base_str = self.strVal[:2]
+        compl = len(base_str) - 2
+        suffix = "0" * compl
+        return base_str + suffix
+
+    def rfill4(self):
+        base_str = self.strVal[:4]
+        compl = len(base_str) - 4
+        suffix = "0" * compl
+        return base_str + suffix
+
+    def rfill6(self):
+        base_str = self.strVal[:6]
+        compl = len(base_str) - 6
+        suffix = "0" * compl
+        return base_str + suffix
 
