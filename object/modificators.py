@@ -122,19 +122,19 @@ class Modificator(object):
     def rfill2(self):
         """ Fill with 0 on the right. """
         base_str = self.strVal[:2]
-        compl = len(base_str) - 2
+        compl = 2 - len(base_str)
         suffix = "0" * compl
         return base_str + suffix
 
     def rfill4(self):
         base_str = self.strVal[:4]
-        compl = len(base_str) - 4
+        compl = 4 - len(base_str)
         suffix = "0" * compl
         return base_str + suffix
 
     def rfill6(self):
         base_str = self.strVal[:6]
-        compl = len(base_str) - 6
+        compl = 6 - len(base_str)
         suffix = "0" * compl
         return base_str + suffix
 
