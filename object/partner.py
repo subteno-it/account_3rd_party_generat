@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution    
+#    OpenERP, Open Source Management Solution
 #    Copyright (C) 2009 SISTHEO
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-#   AIM :   
+#   AIM :
 #           generate third part accunt number on partner's view
 #
 ##############################################################################
@@ -82,7 +82,7 @@ class res_partner(osv.osv):
             prefix = seq_patern[:seq_patern.index('{')]
             suffix = seq_patern[seq_patern.index('}')+1:]
             body = seq_patern[len(prefix)+1:][:len(seq_patern)-len(prefix)-len(suffix)-2]
-            
+
             ar_args = body.split('|')
     #        print "DEBUG: compute_account_number ar_args = %r" % ar_args
             # partner field is always first
@@ -229,7 +229,7 @@ class res_partner(osv.osv):
 # #########################################################
     def create(self, cr, uid, data, context={}):
         new_id = super(res_partner, self).create(cr, uid, data, context)
-        if (('customer' in data) and (data['customer'] == 1)) or (('supplier' in data) and (data['supplier'] == 1)):
+        if (('customer' in data) and (data['customer'] == 1) and not context.get('skip_account_customer',False)) or (('supplier' in data) and (data['supplier'] == 1) and not context.get('skip_account_supplier',False)):
             self.write(cr, uid, [new_id], {}, context)    # fire account number computation (based on partner datas)
         return new_id
 
@@ -242,7 +242,7 @@ class res_partner(osv.osv):
             partner = self.browse(cr, uid, [id])[0]
         # Customer account number
             default_receivable_account = self._get_account_model(cr, uid, 'property_account_receivable')
-            if default_receivable_account and partner.customer and (partner.property_account_receivable.id == default_receivable_account.id):
+            if default_receivable_account and partner.customer and (partner.property_account_receivable.id == default_receivable_account.id) and not context.get('skip_account_customer',False):
                 account_patern = self._get_customer_account_model(cr, uid)
                 account_code = self._get_compute_account_number(cr, uid, partner, self._get_customer_account_sequence(cr, uid) )
                 account_patern['name'] = str( _('Customer : ') + partner.name.encode("utf-8"))[:128]   #becarefull on translat° & length
@@ -252,7 +252,7 @@ class res_partner(osv.osv):
                 super(res_partner, self).write(cr, uid, id, {'property_account_receivable': customer_account_id} )
         # Supplier account number
             default_payable_account = self._get_account_model(cr, uid, 'property_account_payable')
-            if default_payable_account and partner.supplier and (partner.property_account_payable.id == default_payable_account.id):
+            if default_payable_account and partner.supplier and (partner.property_account_payable.id == default_payable_account.id) and not context.get('skip_account_supplier',False):
                 account_patern = self._get_supplier_account_model(cr, uid)
                 account_code = self._get_compute_account_number(cr, uid, partner, self._get_supplier_account_sequence(cr, uid) )
                 account_patern['name'] = str( _('Supplier : ') + partner.name.encode("utf-8"))[:128]   #becarefull on translat° & length
