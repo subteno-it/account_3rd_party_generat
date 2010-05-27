@@ -29,6 +29,13 @@
 #   AUTHOR : Eric VERNICHON for SISTHEO
 ##############################################################################
 
+
+#  SERVER   |    VERSION
+#   5.0.6         ---
+#   5.0.7         26
+
+
+
 {
     "name" : "third parties account number generation",
     "version" : "1.0.1",
