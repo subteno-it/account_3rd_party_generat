@@ -43,7 +43,16 @@ The same is also done for suppliers.
 Credit :
    EverLibre, Zeekom, Syleam
 
-Lats-upadte: 2009-06-04
+
+------
+OpenERP Version = 5.0.7
+------
+Last-update : 2010-05-27
+
+Date Start : 2010-05-27
+
+
+
 """,
     "depends" : ['base',
                     'account',
