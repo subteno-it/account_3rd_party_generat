@@ -45,8 +45,8 @@ Credit :
 
 Lats-upadte: 2009-06-04
 """,
-    "depends" : ['base', 
-                    'account', 
+    "depends" : ['base',
+                    'account',
                     'account_chart',
                 ],
     "init_xml" : [
@@ -54,7 +54,6 @@ Lats-upadte: 2009-06-04
     "update_xml" : [
         "data/account_seq.xml",
         "wizard/install_wizard.xml",
-        "view/partner.xml",
     ],
     "demo_xml" : [],
     "active": False,

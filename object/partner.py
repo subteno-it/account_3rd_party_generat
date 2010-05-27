@@ -37,32 +37,6 @@ from tools.misc import debug
 class res_partner(osv.osv):
     _inherit = 'res.partner'
 
-    def _get_move_line(self, cr, uid, ids, name, args, context=None):
-        """Check if there is account move for this account
-        """
-        if not context:
-            context = {}
-        res={}
-        if not ids:
-            return False
-        for part in self.pool.get('res.partner').browse(cr, uid, ids):
-            debug(part.property_account_payable.name)
-            debug(part.property_account_receivable.name)
-            res[part.id]=False
-            if part.property_account_receivable:
-                mvt = self.pool.get('account.move.line').search(cr, uid, [('account_id', '=', part.property_account_receivable.id)], 0, 1)
-                if mvt:
-                    res[part.id]=True
-            if part.property_account_payable:
-                mvt = self.pool.get('account.move.line').search(cr, uid, [('account_id', '=', part.property_account_payable.id)], 0, 1)
-                if mvt:
-                    res[part.id]=True
-        return res
-
-    _columns = {
-         'account_move': fields.function(_get_move_line, method=True, type='boolean',  string='Moved'),
-    }
-
     _defaults = {
         'customer': lambda *a: 0,   # Do not compute account number if not necessary
     }
@@ -245,7 +219,8 @@ class res_partner(osv.osv):
             if default_receivable_account and partner.customer and (partner.property_account_receivable.id == default_receivable_account.id) and not context.get('skip_account_customer',False):
                 account_patern = self._get_customer_account_model(cr, uid)
                 account_code = self._get_compute_account_number(cr, uid, partner, self._get_customer_account_sequence(cr, uid) )
-                account_patern['name'] = str( _('Customer : ') + partner.name.encode("utf-8"))[:128]   #becarefull on translat° & length
+                account_patern['name'] = _('Customer : ') + partner.name   #becarefull on translat° & length
+                account_patern['name'] = account_patern['name'][:128]
                 account_patern['code'] = account_code
                 debug(account_patern)
                 customer_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
@@ -255,7 +230,8 @@ class res_partner(osv.osv):
             if default_payable_account and partner.supplier and (partner.property_account_payable.id == default_payable_account.id) and not context.get('skip_account_supplier',False):
                 account_patern = self._get_supplier_account_model(cr, uid)
                 account_code = self._get_compute_account_number(cr, uid, partner, self._get_supplier_account_sequence(cr, uid) )
-                account_patern['name'] = str( _('Supplier : ') + partner.name.encode("utf-8"))[:128]   #becarefull on translat° & length
+                account_patern['name'] = _('Supplier : ') + partner.name   #becarefull on translat° & length
+                account_patern['name'] = account_patern['name'][:128]
                 account_patern['code'] = account_code
                 debug(account_patern)
                 supplier_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
