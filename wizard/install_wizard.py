@@ -19,8 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from osv import fields,osv,orm
-import tools    #for translations
+from osv import fields,osv
 import types
 
 
@@ -98,7 +97,7 @@ class wizard_install_third_part_accounts(osv.osv_memory):
         """ Create the properties : specify default account (payable and receivable) for partners
         """
         wiz_data = self.browse(cr, uid, ids[0])
-        print "DEBUG: wizard_install_third_part_accounts > wiz_data = %r" % wiz_data
+        #print "DEBUG: wizard_install_third_part_accounts > wiz_data = %r" % wiz_data
         self._set_property(cr, uid, 'property_account_receivable', wiz_data.receivable_id and wiz_data.receivable_id.id, wiz_data.company_id and wiz_data.company_id.id)
         self._set_property(cr, uid, 'property_account_payable', wiz_data.payable_id and wiz_data.payable_id.id, wiz_data.company_id and wiz_data.company_id.id)
 
