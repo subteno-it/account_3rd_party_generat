@@ -39,6 +39,7 @@
         <record model="ir.actions.todo" id="config_third_part_account">
             <field name="name">Account 3rd part Configure Wizard</field>
             <field name="note">Configure third party account rules</field>
+            <field name="sequence">20</field>
             <field name="action_id" ref="action_third_part_account"/>
         </record>
 
