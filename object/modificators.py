@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution    
+#    OpenERP, Open Source Management Solution
 #    Copyright (C) 2009 SISTHEO
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-#   AIM :   
+#   AIM :
 #           library to generate account codes
 #
 ##############################################################################
@@ -26,10 +26,9 @@
 # 20090603  SYLEAM/CB   modificators
 #
 ##############################################################################
-#   TECHNICAL DETAILS : 
+#   TECHNICAL DETAILS :
 #        'code': fields.char('Code', size=64)
 ##############################################################################
-
 
 import string
 
@@ -38,13 +37,11 @@ class Modificator(object):
 
     def __init__(self, strVal):
         self.strVal = strVal
-                
+
     def setval(self, strVal):
         self.strVal = strVal
-                
 
     def rmspace(self):
-        #return self.strVal.replace(' ','')
         return self.strVal.strip()
 
     def strip(self):
@@ -82,7 +79,6 @@ class Modificator(object):
         return self.strVal[:4]
 
     def truncate6(self):
-#        print "DEBUG: Modificator::truncate6 --> %r" % self.strVal[:6]
         return self.strVal[:6]
 
     def truncate12(self):
@@ -97,15 +93,17 @@ class Modificator(object):
             return "00"
 
     def capitalize(self):
-#        print "DEBUG: Modificator::capitalize --> %r" % self.strVal.upper()
         return self.strVal.upper()
+
     def upper(self):
         return self.strVal.upper()
+
     def uppercase(self):
         return self.strVal.upper()
 
     def lower(self):
         return self.strVal.lower()
+
     def lowercase(self):
         return self.strVal.lower()
 
@@ -138,3 +136,4 @@ class Modificator(object):
         suffix = "0" * compl
         return base_str + suffix
 
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
