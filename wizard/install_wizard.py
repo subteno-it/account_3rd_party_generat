@@ -36,10 +36,12 @@ class wizard_install_third_part_accounts(osv.osv_memory):
         'payable_id': fields.many2one('account.account', 'Account payable', domain="[('type', '=', 'view')]", required=True),
     }
 
-    def _default_account_id(self, cr, uid, account_type, context={}):
-        account_type_id = self.pool.get('account.account.type').search(cr, uid, [('code', '=', account_type)])
+    def _default_account_id(self, cr, uid, account_type, context=None):
+        if context is None:
+            context = {}
+        account_type_id = self.pool.get('account.account.type').search(cr, uid, [('code', '=', account_type)], context=context)
         srch_args = [('type', '=', 'view'), ('user_type', 'in', account_type_id)]
-        account_id = self.pool.get('account.account').search(cr, uid, srch_args)
+        account_id = self.pool.get('account.account').search(cr, uid, srch_args, context=context)
         if account_id:
             if type(account_id) is types.IntType:
                 return account_id
@@ -47,13 +49,15 @@ class wizard_install_third_part_accounts(osv.osv_memory):
                 return account_id[0]
         return False
 
-    def _default_receivable_id(self, cr, uid, context={}):
-        receivable_id = self._default_account_id(cr, uid, 'receivable', context)
-        return receivable_id
+    def _default_receivable_id(self, cr, uid, context=None):
+        if context is None:
+            context = {}
+        return self._default_account_id(cr, uid, 'receivable', context=context)
 
-    def _default_payable_id(self, cr, uid, context={}):
-        payable_id = self._default_account_id(cr, uid, 'payable', context)
-        return payable_id
+    def _default_payable_id(self, cr, uid, context=None):
+        if context is None:
+            context = {}
+        return self._default_account_id(cr, uid, 'payable', context=context)
 
     _defaults = {
         'company_id': lambda self, cr, uid, c: self.pool.get('res.users').browse(cr, uid, [uid], c)[0].company_id.id,
