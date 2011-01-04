@@ -28,51 +28,45 @@
 #   AUTHOR : Claude Brulé for SISTHEO
 #   AUTHOR : Eric VERNICHON for SISTHEO
 ##############################################################################
-
-
 #  SERVER   |    VERSION
 #   5.0.6         ---
 #   5.0.7         26
 
-
-
 {
-    "name" : "third parties account number generation",
-    "version" : "1.0.1",
-    "author" : "SISTHEO",
-    "website": "http://www.sistheo.fr",
-    "category" : "Generic Modules/Accounting",
-    "description": """.
-This module is automaticaly create account number in chat of account according to the partner.
-If partner is customer it generate third party account and associate this new accoun to partner.
-The same is also done for suppliers.
+    'name': 'third parties account number generation',
+    'version': '1.0.1',
+    'author': 'SISTHEO',
+    'website': 'http://www.sistheo.fr',
+    'category': 'Generic Modules/Accounting',
+    'description': """.
+    This module is automaticaly create account number in chat of account according to the partner.
+    If partner is customer it generate third party account and associate this new accoun to partner.
+    The same is also done for suppliers.
 
-Credit :
-   EverLibre, Zeekom, Syleam
-
-
-------
-OpenERP Version = 5.0.7
-------
-Last-update : 2010-05-27
-
-Date Start : 2010-05-27
+    Credit :
+        EverLibre, Zeekom, Syleam
 
 
+    ------
+    OpenERP Version = 5.0.7
+    ------
+    Last-update : 2010-05-27
 
-""",
-    "depends" : ['base',
-                    'account',
-                    'account_chart',
-                ],
-    "init_xml" : [
+    Date Start : 2010-05-27""",
+    'depends': [
+        'base',
+        'account',
+        'account_chart',
     ],
-    "update_xml" : [
-        "data/account_seq.xml",
-        "wizard/install_wizard.xml",
+    'init_xml': [],
+    'update_xml': [
+        'security/ir.model.access.csv',
+        'data/account_seq.xml',
+        'wizard/install_wizard.xml',
     ],
-    "demo_xml" : [],
-    "active": False,
-    "installable": True
+    'demo_xml': [],
+    'active': False,
+    'installable': True
 }
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
