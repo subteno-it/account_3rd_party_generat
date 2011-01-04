@@ -92,10 +92,10 @@ class wizard_install_third_part_accounts(osv.osv_memory):
         return out_id
 
     def action_start_install(self, cr, uid, ids, context=None):
-        """ Create the properties : specify default account (payable and receivable) for partners
+        """
+        Create the properties : specify default account (payable and receivable) for partners
         """
         wiz_data = self.browse(cr, uid, ids[0])
-        #print "DEBUG: wizard_install_third_part_accounts > wiz_data = %r" % wiz_data
         self._set_property(cr, uid, 'property_account_receivable', wiz_data.receivable_id and wiz_data.receivable_id.id, wiz_data.company_id and wiz_data.company_id.id)
         self._set_property(cr, uid, 'property_account_payable', wiz_data.payable_id and wiz_data.payable_id.id, wiz_data.company_id and wiz_data.company_id.id)
 

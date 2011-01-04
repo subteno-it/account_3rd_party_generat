@@ -29,7 +29,8 @@
 #
 ##############################################################################
 
-from osv import fields, osv
+from osv import osv
+
 from tools.translate import _
 from modificators import *
 from tools.misc import debug
