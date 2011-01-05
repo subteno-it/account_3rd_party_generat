@@ -208,19 +208,25 @@ class res_partner(osv.osv):
     # #########################################################
     #       O V E R L O A D     O S V
     # #########################################################
-    def create(self, cr, uid, data, context={}):
+    def create(self, cr, uid, data, context=None):
+        if context is None:
+            context = {}
+
         new_id = super(res_partner, self).create(cr, uid, data, context)
         if (('customer' in data) and (data['customer'] == 1) and not context.get('skip_account_customer', False)) or \
            (('supplier' in data) and (data['supplier'] == 1) and not context.get('skip_account_supplier', False)):
             self.write(cr, uid, [new_id], {}, context)    # fire account number computation (based on partner datas)
         return new_id
 
-    def write(self, cr, uid, ids, vals, context={}):
+    def write(self, cr, uid, ids, vals, context=None):
+        if context is None:
+            context = {}
+
         # Update all ids (batch way)
         osv_stuff = super(res_partner, self).write(cr, uid, ids, vals, context)
-        for id in ids:
+        for partner in self.browse(cr, uid, ids, context=context):
             # Update one by one
-            partner = self.browse(cr, uid, [id])[0]
+            #partner = self.browse(cr, uid, [id])[0]
             # Customer account number
             default_receivable_account = self._get_account_model(cr, uid, 'property_account_receivable')
             if default_receivable_account and partner.customer and (partner.property_account_receivable.id == default_receivable_account.id) and not context.get('skip_account_customer', False):
@@ -231,7 +237,7 @@ class res_partner(osv.osv):
                 account_patern['code'] = account_code
                 debug(account_patern)
                 customer_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
-                super(res_partner, self).write(cr, uid, id, {'property_account_receivable': customer_account_id})
+                super(res_partner, self).write(cr, uid, partner.id, {'property_account_receivable': customer_account_id})
             # Supplier account number
             default_payable_account = self._get_account_model(cr, uid, 'property_account_payable')
             if default_payable_account and partner.supplier and (partner.property_account_payable.id == default_payable_account.id) and not context.get('skip_account_supplier', False):
@@ -242,7 +248,7 @@ class res_partner(osv.osv):
                 account_patern['code'] = account_code
                 debug(account_patern)
                 supplier_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
-                super(res_partner, self).write(cr, uid, id, {'property_account_payable': supplier_account_id})
+                super(res_partner, self).write(cr, uid, partner.id, {'property_account_payable': supplier_account_id})
 
         return osv_stuff
 
