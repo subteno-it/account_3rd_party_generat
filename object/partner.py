@@ -209,13 +209,17 @@ class res_partner(osv.osv):
     #       O V E R L O A D     O S V
     # #########################################################
     def create(self, cr, uid, data, context=None):
+        """
+        When create a customer and supplier, we create the account code
+        and affect it to this partner
+        """
         if context is None:
             context = {}
 
         new_id = super(res_partner, self).create(cr, uid, data, context)
-        if (('customer' in data) and (data['customer'] == 1) and not context.get('skip_account_customer', False)) or \
-           (('supplier' in data) and (data['supplier'] == 1) and not context.get('skip_account_supplier', False)):
-            self.write(cr, uid, [new_id], {}, context)    # fire account number computation (based on partner datas)
+        if not context.get('skip_account_customer', False):
+            if data.get('customer', 0) == 1 or data.get('supplier', 0) == 1:
+                self.write(cr, uid, [new_id], {}, context=context)
         return new_id
 
     def write(self, cr, uid, ids, vals, context=None):
