@@ -30,6 +30,8 @@
 ##############################################################################
 
 from osv import osv
+from osv import fields
+
 
 from tools.translate import _
 from modificators import *
@@ -38,6 +40,57 @@ from tools.misc import debug
 
 class res_partner(osv.osv):
     _inherit = 'res.partner'
+
+    def _user_company(self, cr, uid, context):
+        """
+        Return the company id for the connected user
+        """
+        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
+        return user.company_id.id
+
+    def _customer_type(self, cr, uid, context=None):
+        """
+        Search all configuration on the company for the customer
+        """
+        if context is None:
+            context = {}
+        args = [
+            ('company_id', '=', self._user_company(cr, uid, context=context)),
+            ('partner_type', '=', 'customer'),
+        ]
+        acc_type_obj = self.pool.get('account.generator.type')
+        type_ids = acc_type_obj.search(cr, uid, args, context=context)
+        res = []
+        if type_ids:
+            for t in acc_type_obj.browse(cr, uid, type_ids, context=context):
+                res.append((t.name.replace(' ', '_').lower(), t.name))
+        return res
+
+    def _supplier_type(self, cr, uid, context=None):
+        """
+        Search all configuration on the company for the supplier
+        """
+        if context is None:
+            context = {}
+        args = [
+            ('company_id', '=', self._user_company(cr, uid, context=context)),
+            ('partner_type', '=', 'supplier'),
+        ]
+        acc_type_obj = self.pool.get('account.generator.type')
+        type_ids = acc_type_obj.search(cr, uid, args, context=context)
+        res = []
+        if type_ids:
+            for t in acc_type_obj.browse(cr, uid, type_ids, context=context):
+                res.append((t.name.replace(' ', '_').lower(), t.name))
+        return res
+
+    #def _partner_default_value
+
+    _columns = {
+        'customer_type': fields.selection(_customer_type, 'Customer type'),
+        'supplier_type': fields.selection(_supplier_type, 'Supplier type'),
+    }
+
 
     _defaults = {
         'customer': lambda *a: 0,   # Do not compute account number if not necessary

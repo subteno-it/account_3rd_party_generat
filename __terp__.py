@@ -28,9 +28,6 @@
 #   AUTHOR : Claude Brulé for SISTHEO
 #   AUTHOR : Eric VERNICHON for SISTHEO
 ##############################################################################
-#  SERVER   |    VERSION
-#   5.0.6         ---
-#   5.0.7         26
 
 {
     'name': 'third parties account number generation',
@@ -48,9 +45,9 @@
 
 
     ------
-    OpenERP Version = 5.0.7
+    OpenERP Version >= 5.0.7
     ------
-    Last-update : 2010-05-27
+    Last-update : 2011-01-09
 
     Date Start : 2010-05-27""",
     'depends': [
@@ -63,6 +60,7 @@
         'security/ir.model.access.csv',
         'data/account_seq.xml',
         'view/company.xml',
+        'view/partner.xml',
         'wizard/install_wizard.xml',
     ],
     'demo_xml': [],
