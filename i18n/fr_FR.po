@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.7\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2011-01-09 16:06:22+0000\n"
-"PO-Revision-Date: 2011-01-09 17:11+0100\n"
+"POT-Creation-Date: 2011-01-09 20:46:35+0000\n"
+"PO-Revision-Date: 2011-01-09 21:48+0100\n"
 "Last-Translator: Christophe Chauvet <christophe.chauvet@syleam.fr>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -36,6 +36,11 @@ msgid "Configure third party account rules"
 msgstr "Configurer la règle de création des comptes de tiers"
 
 #. module: account_3rd_party_generat
+#: field:res.partner,customer_type:0
+msgid "Customer type"
+msgstr "Type de client"
+
+#. module: account_3rd_party_generat
 #: model:ir.model,name:account_3rd_party_generat.model_account_generator_type
 msgid "Account generator customize per type"
 msgstr "Générateur de compte paramétrable par type"
@@ -63,6 +68,12 @@ msgstr "Fournisseur"
 #. module: account_3rd_party_generat
 #: code:addons/account_3rd_party_generat/object/partner.py:0
 #, python-format
+msgid "Too many default value define for %s type"
+msgstr "Trop de valeur par defaut définit pour le type %s"
+
+#. module: account_3rd_party_generat
+#: code:addons/account_3rd_party_generat/object/partner.py:0
+#, python-format
 msgid ""
 "You need to define the %s sequence' % seq_name))\n"
 "        sequence_data = self.pool.get('ir.sequence"
@@ -86,6 +97,12 @@ msgstr ""
 #: field:wizard.install.third.part.accounts,payable_id:0
 msgid "Account payable"
 msgstr "Compte fournisseur"
+
+#. module: account_3rd_party_generat
+#: code:addons/account_3rd_party_generat/object/company.py:0
+#, python-format
+msgid "Error in process, contact your administrator!"
+msgstr "Erreur de traitement, contacter votre administrateur!"
 
 #. module: account_3rd_party_generat
 #: help:account.generator.type,default_value:0
@@ -176,6 +193,13 @@ msgid "Account template"
 msgstr "Modèle de compte"
 
 #. module: account_3rd_party_generat
+#: code:addons/account_3rd_party_generat/object/company.py:0
+#: code:addons/account_3rd_party_generat/object/partner.py:0
+#, python-format
+msgid "Error"
+msgstr "Erreur"
+
+#. module: account_3rd_party_generat
 #: code:addons/account_3rd_party_generat/object/partner.py:0
 #, python-format
 msgid "Error !"
@@ -193,9 +217,9 @@ msgid "Customer : "
 msgstr "Client : "
 
 #. module: account_3rd_party_generat
-#: field:account.generator.type,ir_sequence_id:0
-msgid "Sequence"
-msgstr "Séquence"
+#: field:res.partner,supplier_type:0
+msgid "Supplier type"
+msgstr "Type de fournisseur"
 
 #. module: account_3rd_party_generat
 #: model:ir.module.module,description:account_3rd_party_generat.module_meta_information
@@ -210,12 +234,17 @@ msgid ""
 "\n"
 "\n"
 "    ------\n"
-"    OpenERP Version = 5.0.7\n"
+"    OpenERP Version >= 5.0.7\n"
 "    ------\n"
-"    Last-update : 2010-05-27\n"
+"    Last-update : 2011-01-09\n"
 "\n"
 "    Date Start : 2010-05-27"
 msgstr ""
+
+#. module: account_3rd_party_generat
+#: field:account.generator.type,ir_sequence_id:0
+msgid "Sequence"
+msgstr "Séquence"
 
 #. module: account_3rd_party_generat
 #: model:ir.module.module,shortdesc:account_3rd_party_generat.module_meta_information

@@ -34,7 +34,9 @@ import string
 
 
 class Modificator(object):
-
+    """
+    TODO: describe this
+    """
     def __init__(self, strVal):
         self.strVal = strVal
 
@@ -135,5 +137,10 @@ class Modificator(object):
         compl = 6 - len(base_str)
         suffix = "0" * compl
         return base_str + suffix
+
+if __name__ == '__main__':
+    mod = Modificator('SYLEAM INFO SERVICES')
+    print mod.truncate2()
+    print mod.truncate4()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -23,7 +23,7 @@
 from osv import osv
 from osv import fields
 from tools.translate import _
-from modificators import *
+from modificators import Modificator
 from tools.misc import debug
 
 
@@ -88,7 +88,8 @@ class res_partner(osv.osv):
         type_ids = acc_type_obj.search(cr, uid, args, context=context)
         if not type_ids:
             return False
-        elif len(type_ids) > 2:
+        elif len(type_ids) > 1:
+            context = self.pool.get('res.users').context_get(cr, uid)
             raise osv.except_osv(_('Error'), _('Too many default value define for %s type') % _(field))
 
         t = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
