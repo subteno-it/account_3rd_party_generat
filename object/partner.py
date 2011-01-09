@@ -19,20 +19,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-#   AIM :
-#           generate third part accunt number on partner's view
-#
-##############################################################################
-# Date      Author      Description
-# 20090327  SYLEAM/CB   use the default parnet's account value as a patern
-# 20090603  SYLEAM/CB   Add modificators
-#
-##############################################################################
 
 from osv import osv
 from osv import fields
-
-
 from tools.translate import _
 from modificators import *
 from tools.misc import debug
@@ -84,16 +73,42 @@ class res_partner(osv.osv):
                 res.append((t.name.replace(' ', '_').lower(), t.name))
         return res
 
-    #def _partner_default_value
+    def _partner_default_value(self, cr, uid, field='customer', context=None):
+        """
+        Search the default context
+        """
+        if context is None:
+            context = {}
+        args = [
+            ('company_id', '=', self._user_company(cr, uid, context=context)),
+            ('partner_type', '=', field),
+            ('default_value', '=', True),
+        ]
+        acc_type_obj = self.pool.get('account.generator.type')
+        type_ids = acc_type_obj.search(cr, uid, args, context=context)
+        if not type_ids:
+            return False
+        elif len(type_ids) > 2:
+            raise osv.except_osv(_('Error'), _('Too many default value define for %s type') % _(field))
+
+        t = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
+        return t.name.replace(' ', '_').lower()
+
+    def _customer_default_value(self, cr, uid, context=None):
+        return self._partner_default_value(cr, uid, 'customer', context=context)
+
+    def _supplier_default_value(self, cr, uid, context=None):
+        return self._partner_default_value(cr, uid, 'supplier', context=context)
 
     _columns = {
         'customer_type': fields.selection(_customer_type, 'Customer type'),
         'supplier_type': fields.selection(_supplier_type, 'Supplier type'),
     }
 
-
     _defaults = {
         'customer': lambda *a: 0,   # Do not compute account number if not necessary
+        'customer_type': _customer_default_value,
+        'supplier_type': _supplier_default_value,
     }
 
     #----------------------------------------------------------
