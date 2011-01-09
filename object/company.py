@@ -37,11 +37,12 @@ class AccountGeneratorType(osv.osv):
         'default_value': fields.boolean('Default value', help='Default value for this type'),
         'ir_sequence_id': fields.many2one('ir.sequence', 'Sequence', help='Sequence use to generate the code'),
         'account_template_id': fields.many2one('account.account.template', 'Account template', help='Account use to create the new one'),
-        'account_parent_id': fields.many2one('account.account', 'Parent account', help='Select the parent account of the new account générate'),
-        'company_id': fields.many2one('res.company', 'Company', help='Company where this configuraiton is apply', required=True),
+        'account_parent_id': fields.many2one('account.account', 'Parent account', help='Select the parent account of the new account generate'),
+        'company_id': fields.many2one('res.company', 'Company', help='Company where this configuration is apply', required=True),
     }
 
     _defaults = {
+        'partner_type': lambda *a: 'customer',
         'default_value': lambda *a: False,
         'ir_sequence_id': lambda *a: False,
         'account_template_id': lambda *a: False,

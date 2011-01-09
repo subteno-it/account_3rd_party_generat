@@ -35,12 +35,12 @@
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <tree string="Account generator" editable="bottom">
-                    <field name="partner_type"/>
-                    <field name="name"/>
+                    <field name="partner_type" width="200"/>
+                    <field name="name" width="200"/>
                     <field name="default_value"/>
-                    <field name="account_template_id"/>
-                    <field name="account_parent_id"/>
-                    <field name="ir_sequence_id"/>
+                    <field name="account_template_id" width="150"/>
+                    <field name="account_parent_id" width="150"/>
+                    <field name="ir_sequence_id" width="150"/>
                 </tree>
             </field>
         </record>
