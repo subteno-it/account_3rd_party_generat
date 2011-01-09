@@ -35,7 +35,7 @@
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <tree string="Account generator" editable="bottom">
-                    <field name="partner_type" width="200"/>
+                    <field name="partner_type" width="200" on_change="onchange_partner_type(partner_type)"/>
                     <field name="name" width="200"/>
                     <field name="default_value"/>
                     <field name="account_template_id" width="150" domain="[('type','=', 'receivable')]"/>
@@ -53,7 +53,7 @@
             <field name="arch" type="xml">
                 <form string="Account generator">
                     <field name="name" select="1"/>
-                    <field name="partner_type" select="1"/>
+                    <field name="partner_type" select="1" on_change="onchange_partner_type(partner_type)"/>
                     <field name="account_template_id" select="1" domain="[('type','=', 'receivable')]"/>
                     <field name="account_parent_id" select="1" domain="[('type','in', ('view', 'receivable'))]"/>
                     <field name="ir_sequence_id" select="1" domain="[('code','=', 'account.partner.third_part')]"/>

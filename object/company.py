@@ -25,6 +25,7 @@
 
 from osv import osv
 from osv import fields
+from tools.translate import _
 
 
 class AccountGeneratorType(osv.osv):
@@ -48,6 +49,30 @@ class AccountGeneratorType(osv.osv):
         'account_template_id': lambda *a: False,
         'account_parent_id': lambda *a: False,
     }
+
+    def onchange_partner_type(self, cr, uid, ids, partner_type='customer', context=None):
+        """
+        When partner type change, we must change domain for:
+        - account_template_id
+        - account_parent_id
+        """
+        if context is None:
+            context = {}
+
+        if partner_type == 'customer':
+            domain = {
+                'account_template_id': [('type','=', 'receivable')],
+                'account_parent_id': [('type','in', ('view', 'receivable'))],
+            }
+        elif partner_type == 'supplier':
+            domain = {
+                'account_template_id': [('type','=', 'payable')],
+                'account_parent_id': [('type','in', ('view', 'payable'))],
+            }
+        else:
+            raise osv.except_osv(_('Error'), _('Error in process, contact your administrator!'))
+
+        return {'value': {}, 'domain': domain}
 
 AccountGeneratorType()
 
