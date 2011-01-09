@@ -34,6 +34,7 @@ class AccountGeneratorType(osv.osv):
 
     _columns = {
         'partner_type': fields.selection([('customer', 'Customer'), ('supplier', 'Supplier')], 'Type', required=True, help='Select the type of partner'),
+        'code': fields.char('code', size=12, required=True, help='Code use to store value in the database'),
         'name': fields.char('Name', size=64, required=True, help='Name appear on the partner form'),
         'default_value': fields.boolean('Default value', help='Default value for this type'),
         'ir_sequence_id': fields.many2one('ir.sequence', 'Sequence', help='Sequence use to generate the code'),
