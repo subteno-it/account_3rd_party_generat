@@ -62,6 +62,7 @@
     'update_xml': [
         'security/ir.model.access.csv',
         'data/account_seq.xml',
+        'view/company.xml',
         'wizard/install_wizard.xml',
     ],
     'demo_xml': [],

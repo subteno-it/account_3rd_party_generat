@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        ##############################################################################
+        #
+        #    account_3rd_party_generat module for OpenERP, Module to generate account
+        #                                            number for customer and supplier
+        #    Copyright (C) 2011 SYLEAM ([http://www.syleam.fr/])
+        #              Christophe CHAUVET [christophe.chauvet@syleam.fr]
+        #
+        #    This file is a part of account_3rd_party_generat
+        #
+        #    account_3rd_party_generat is free software: you can redistribute it and/or modify
+        #    it under the terms of the GNU General Public License as published by
+        #    the Free Software Foundation, either version 3 of the License, or
+        #    (at your option) any later version.
+        #
+        #    account_3rd_party_generat is distributed in the hope that it will be useful,
+        #    but WITHOUT ANY WARRANTY; without even the implied warranty of
+        #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        #    GNU General Public License for more details.
+        #
+        #    You should have received a copy of the GNU General Public License
+        #    along with this program.  If not, see [http://www.gnu.org/licenses/].
+        #
+        ##############################################################################
+
+        <!-- ************************************************************** -->
+        <!-- ** Account Generator Type ************************************ -->
+        <!-- ************************************************************** -->
+        <record id="view_account_generator_type_tree" model="ir.ui.view">
+            <field name="name">account.generator.type.tree</field>
+            <field name="model">account.generator.type</field>
+            <field name="type">tree</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <tree string="Account generator" editable="bottom">
+                    <field name="partner_type"/>
+                    <field name="name"/>
+                    <field name="default_value"/>
+                    <field name="account_template_id"/>
+                    <field name="account_parent_id"/>
+                    <field name="ir_sequence_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_account_generator_type_form" model="ir.ui.view">
+            <field name="name">account.generator.type.form</field>
+            <field name="model">account.generator.type</field>
+            <field name="type">form</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <form string="Account generator">
+                    <field name="name" select="1"/>
+                    <field name="partner_type" select="1"/>
+                    <field name="account_template_id" select="1"/>
+                    <field name="account_parent_id" select="1"/>
+                    <field name="ir_sequence_id" select="1"/>
+                    <field name="default_value" select="1"/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ************************************************************** -->
+        <!-- ** Res Company *********************************************** -->
+        <!-- ************************************************************** -->
+
+        <record id="view_res_company_account_generator_form_form" model="ir.ui.view">
+            <field name="name">res.company.account.generator.form</field>
+            <field name="model">res.company</field>
+            <field name="type">form</field>
+            <field name="priority" eval="18"/>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="/form/notebook" position="inside">
+                    <page string="Account generator">
+                        <separator string="Configure the account generator, for each type of partner" colspan="4"/>
+                        <field name="account_generator_type_ids" mode="tree,form" nolabel="1" colspan="4"/>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</openerp>
