@@ -40,7 +40,7 @@
                     <field name="default_value"/>
                     <field name="account_template_id" width="150"/>
                     <field name="account_parent_id" width="150"/>
-                    <field name="ir_sequence_id" width="150"/>
+                    <field name="ir_sequence_id" width="150" domain="[('code','=', 'account.partner.third_part')]"/>
                 </tree>
             </field>
         </record>
@@ -56,7 +56,7 @@
                     <field name="partner_type" select="1"/>
                     <field name="account_template_id" select="1"/>
                     <field name="account_parent_id" select="1"/>
-                    <field name="ir_sequence_id" select="1"/>
+                    <field name="ir_sequence_id" select="1" domain="[('code','=', 'account.partner.third_part')]"/>
                     <field name="default_value" select="1"/>
                 </form>
             </field>
