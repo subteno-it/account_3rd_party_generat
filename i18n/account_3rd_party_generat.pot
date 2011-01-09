@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.15\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2011-01-09 15:49:56+0000\n"
-"PO-Revision-Date: 2011-01-09 15:49:56+0000\n"
+"POT-Creation-Date: 2011-01-09 16:06:22+0000\n"
+"PO-Revision-Date: 2011-01-09 16:06:22+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -28,11 +28,6 @@ msgstr ""
 #. module: account_3rd_party_generat
 #: view:wizard.install.third.part.accounts:0
 msgid "Account number"
-msgstr ""
-
-#. module: account_3rd_party_generat
-#: help:account.generator.type,name:0
-msgid "Name appear on the partner form"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -134,8 +129,8 @@ msgid "Supplier : "
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: field:wizard.install.third.part.accounts,receivable_id:0
-msgid "Account receivable"
+#: help:account.generator.type,company_id:0
+msgid "Company where this configuration is apply"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -144,8 +139,8 @@ msgid "Customer"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: help:account.generator.type,company_id:0
-msgid "Company where this configuraiton is apply"
+#: help:account.generator.type,name:0
+msgid "Name appear on the partner form"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -161,6 +156,11 @@ msgstr ""
 #. module: account_3rd_party_generat
 #: field:res.company,account_generator_type_ids:0
 msgid "Account generator type"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: help:account.generator.type,account_parent_id:0
+msgid "Select the parent account of the new account generate"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -189,11 +189,6 @@ msgstr ""
 #: code:addons/account_3rd_party_generat/object/partner.py:0
 #, python-format
 msgid "Customer : "
-msgstr ""
-
-#. module: account_3rd_party_generat
-#: help:account.generator.type,account_parent_id:0
-msgid "Select the parent account of the new account générate"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -228,5 +223,10 @@ msgstr ""
 #. module: account_3rd_party_generat
 #: view:wizard.install.third.part.accounts:0
 msgid "Cancel"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: field:wizard.install.third.part.accounts,receivable_id:0
+msgid "Account receivable"
 msgstr ""
 

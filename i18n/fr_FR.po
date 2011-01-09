@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.7\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2011-01-09 15:49:56+0000\n"
-"PO-Revision-Date: 2011-01-09 16:53+0100\n"
+"POT-Creation-Date: 2011-01-09 16:06:22+0000\n"
+"PO-Revision-Date: 2011-01-09 17:11+0100\n"
 "Last-Translator: Christophe Chauvet <christophe.chauvet@syleam.fr>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -30,11 +30,6 @@ msgid "Account number"
 msgstr "Numéro de compte"
 
 #. module: account_3rd_party_generat
-#: help:account.generator.type,name:0
-msgid "Name appear on the partner form"
-msgstr "Nom qui apparait dans le formulaire des partenaires"
-
-#. module: account_3rd_party_generat
 #: model:ir.actions.act_window,name:account_3rd_party_generat.action_third_part_account
 #: model:ir.actions.todo,note:account_3rd_party_generat.config_third_part_account
 msgid "Configure third party account rules"
@@ -43,12 +38,12 @@ msgstr "Configurer la règle de création des comptes de tiers"
 #. module: account_3rd_party_generat
 #: model:ir.model,name:account_3rd_party_generat.model_account_generator_type
 msgid "Account generator customize per type"
-msgstr ""
+msgstr "Générateur de compte paramétrable par type"
 
 #. module: account_3rd_party_generat
 #: view:res.company:0
 msgid "Configure the account generator, for each type of partner"
-msgstr ""
+msgstr "Configuration du générateur de compte, pour chaque type de partenaires"
 
 #. module: account_3rd_party_generat
 #: constraint:ir.actions.act_window:0
@@ -135,9 +130,9 @@ msgid "Supplier : "
 msgstr "Fournisseur : "
 
 #. module: account_3rd_party_generat
-#: field:wizard.install.third.part.accounts,receivable_id:0
-msgid "Account receivable"
-msgstr "Compte client"
+#: help:account.generator.type,company_id:0
+msgid "Company where this configuration is apply"
+msgstr "Société ou la configuration est appliqué"
 
 #. module: account_3rd_party_generat
 #: selection:account.generator.type,partner_type:0
@@ -145,9 +140,9 @@ msgid "Customer"
 msgstr "Client"
 
 #. module: account_3rd_party_generat
-#: help:account.generator.type,company_id:0
-msgid "Company where this configuraiton is apply"
-msgstr "Société ou cette configuration sera applicable"
+#: help:account.generator.type,name:0
+msgid "Name appear on the partner form"
+msgstr "Nom qui apparait dans le formulaire des partenaires"
 
 #. module: account_3rd_party_generat
 #: constraint:ir.ui.view:0
@@ -162,13 +157,18 @@ msgstr "Nom"
 #. module: account_3rd_party_generat
 #: field:res.company,account_generator_type_ids:0
 msgid "Account generator type"
-msgstr ""
+msgstr "Type de générateur de compte"
+
+#. module: account_3rd_party_generat
+#: help:account.generator.type,account_parent_id:0
+msgid "Select the parent account of the new account generate"
+msgstr "Sélectionner le compte parent pour le nouveau compte généré"
 
 #. module: account_3rd_party_generat
 #: view:account.generator.type:0
 #: view:res.company:0
 msgid "Account generator"
-msgstr ""
+msgstr "Générateur de compte"
 
 #. module: account_3rd_party_generat
 #: field:account.generator.type,account_template_id:0
@@ -191,11 +191,6 @@ msgstr "Séquence utilisée pour générer le compte comptable"
 #, python-format
 msgid "Customer : "
 msgstr "Client : "
-
-#. module: account_3rd_party_generat
-#: help:account.generator.type,account_parent_id:0
-msgid "Select the parent account of the new account générate"
-msgstr ""
 
 #. module: account_3rd_party_generat
 #: field:account.generator.type,ir_sequence_id:0
@@ -232,6 +227,13 @@ msgstr "Génération automatique des comptes de tiers"
 msgid "Cancel"
 msgstr "Annuler"
 
+#. module: account_3rd_party_generat
+#: field:wizard.install.third.part.accounts,receivable_id:0
+msgid "Account receivable"
+msgstr "Compte client"
+
+#~ msgid "Company where this configuraiton is apply"
+#~ msgstr "Société ou cette configuration sera applicable"
 #~ msgid ".\n"
 #~ "This module is automaticaly create account number in chat of account according to the partner.\n"
 #~ "If partner is customer it generate third party account and associate this new accoun to partner.\n"
