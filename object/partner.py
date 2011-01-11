@@ -24,7 +24,6 @@ from osv import osv
 from osv import fields
 from tools.translate import _
 from modificators import Modificator
-from tools.misc import debug
 
 
 class res_partner(osv.osv):
@@ -191,6 +190,13 @@ class res_partner(osv.osv):
     def _create_new_account(self, cr, uid, type=None, data=None, context=None):
         """
         Create the a new account base on a company configuration
+
+        :param type: Type of the partner (customer or supplier)
+        :type  type: str
+        :param data: dict of create value
+        :type  data: dict
+        :return: the id of the new account
+        :rtype: integer
         """
         if context is None:
             context = {}
