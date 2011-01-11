@@ -62,13 +62,13 @@ class AccountGeneratorType(osv.osv):
 
         if partner_type == 'customer':
             domain = {
-                'account_template_id': [('type','=', 'receivable')],
-                'account_parent_id': [('type','in', ('view', 'receivable'))],
+                'account_template_id': [('type', '=', 'receivable')],
+                'account_parent_id': [('type', 'in', ('view', 'receivable'))],
             }
         elif partner_type == 'supplier':
             domain = {
-                'account_template_id': [('type','=', 'payable')],
-                'account_parent_id': [('type','in', ('view', 'payable'))],
+                'account_template_id': [('type', '=', 'payable')],
+                'account_parent_id': [('type', 'in', ('view', 'payable'))],
             }
         else:
             raise osv.except_osv(_('Error'), _('Error in process, contact your administrator!'))
@@ -84,7 +84,6 @@ class ResCompany(osv.osv):
     _columns = {
         'account_generator_type_ids': fields.one2many('account.generator.type', 'company_id', 'Account generator type'),
     }
-
 
 ResCompany()
 

@@ -52,7 +52,7 @@ class res_partner(osv.osv):
         res = []
         if type_ids:
             for t in acc_type_obj.browse(cr, uid, type_ids, context=context):
-                res.append((t.name.replace(' ', '_').lower(), t.name))
+                res.append((t.code, t.name))
         return res
 
     def _supplier_type(self, cr, uid, context=None):
@@ -70,7 +70,7 @@ class res_partner(osv.osv):
         res = []
         if type_ids:
             for t in acc_type_obj.browse(cr, uid, type_ids, context=context):
-                res.append((t.name.replace(' ', '_').lower(), t.name))
+                res.append((t.code, t.name))
         return res
 
     def _partner_default_value(self, cr, uid, field='customer', context=None):
@@ -93,7 +93,7 @@ class res_partner(osv.osv):
             raise osv.except_osv(_('Error'), _('Too many default value define for %s type') % _(field))
 
         t = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
-        return t.name.replace(' ', '_').lower()
+        return t.code
 
     def _customer_default_value(self, cr, uid, context=None):
         return self._partner_default_value(cr, uid, 'customer', context=context)
@@ -133,7 +133,11 @@ class res_partner(osv.osv):
 
             ar_args = body.split('|')
             # partner field is always first
-            partner_value = getattr(partner, ar_args[0])
+            if isinstance(partner, dict):
+                partner_value = partner.get(ar_args[0], '')
+            else:
+                partner_value = getattr(partner, ar_args[0])
+
             if partner_value:
                 # Modificators
                 mdf = Modificator(partner_value)
@@ -158,125 +162,66 @@ class res_partner(osv.osv):
 
         return account_number
 
-    def _get_account_model(self, cr, uid, model_name):
+    def _create_account_from_template(self, cr, uid, acc_value=None, acc_company=None, acc_tmpl=None, acc_parent=False, context=None):
         """
-        Retreive default property for partner's account. This will be use as template / default values.
+        Compose a new account the template define on the company
 
-        :param model_name: the name of the property
-        :type  model_name: str
-        :return: the account (object)
-        :rtype: osv.osv.browse
-        """
-        property_obj = self.pool.get('ir.property')
-        #FIXME OpenERP is creating bad properties with res_id setted, so by luck we can retreive the original one
-        property_id = property_obj.search(cr, uid, [('name', '=', model_name), ('res_id', '=', False)])
-        if not property_id or len(property_id) != 1:
-            #raise osv.except_osv(_('Error !'),_('You need to define ONE default account number in properties for %s' % model_name))
-            return False
-        property_data = self.pool.get('ir.property').browse(cr, uid, property_id)[0]
-        account_id = int(property_data.value.split(',')[1])
-        account_data = self.pool.get('account.account').browse(cr, uid, account_id)
-        return account_data
-
-    def _get_data_account_model(self, brobj_account):
-        """
-        Retreive account values from template.
-
-        :param brobj_account: account template datas/values
-        :type  brobj_account: osv.osv.browse
-        :return: the account values
+        :param acc_tmpt: The account template configuration
+        :type  acc_tmpl: osv.osv.browse
+        :param acc_parent: The parent account to link the new account
+        :type  acc_parent: integer
+        :return: New account configuration
         :rtype: dict
         """
-        #FIXME there may be a better way to transfert data form parent to child's pattern
-        data_account_model = {
-            'currency_id': brobj_account.currency_id.id,
-            'user_type': brobj_account.user_type.id,
-            'parent_id': brobj_account.id,
-            'reconcile': brobj_account.reconcile,
-            'shortcut': brobj_account.shortcut,
-            'company_currency_id': brobj_account.company_currency_id.id,
-            'company_id': brobj_account.company_id.id,
+        new_account = {
+            'name': acc_value.get('acc_name','Unknown'),
+            'code': acc_value.get('acc_number','CODE'),
+            'parent_id': acc_parent,
+            'company_id': acc_company,
+            'user_type': acc_tmpl.user_type.id,
+            'reconcile': True,
+            'check_history': True,
+            'currency_id': acc_tmpl.currency_id and acc_tmpl.currency_id.id or False,
             'active': True,
-            'parent_left': brobj_account.parent_left,
-            'parent_right': brobj_account.parent_right,
-            'currency_mode': brobj_account.currency_mode,
-            'check_history': brobj_account.check_history,
+            'type': acc_tmpl.type,
+            'tax_ids': [(6, 0, [x.id for x in acc_tmpl.tax_ids])],
         }
-        return data_account_model
+        return new_account
 
-    def _get_account_sequence(self, cr, uid, seq_name):
+    def _create_new_account(self, cr, uid, type=None, data=None, context=None):
         """
-        Retrieve sequence value (next number)
-
-        :param seq_name: Name of the sequence (not the same on suppliers and customers)
-        :type  seq_name: str
-
-        :return: The next value from selected sequence
-        :rtype: str
+        Create the a new account base on a company configuration
         """
-        #FIXME code field is type of sequence nor code, so we're oblige to search on the name (witch can be translated)
-        sequence_obj = self.pool.get('ir.sequence')
-        sequence_id = sequence_obj.search(cr, uid, [('code', '=', 'account.partner.third_part'), ('name', '=', seq_name)])
-        if not sequence_id or len(sequence_id) != 1:
-            raise osv.except_osv(_('Error !'), _('You need to define the %s sequence' % seq_name))
-        sequence_data = self.pool.get('ir.sequence').get_id(cr, uid, sequence_id[0])
-        return sequence_data
+        if context is None:
+            context = {}
 
-    #----------------------------------------------------------
-    #   Private methods CUSTOMER ONLY
-    #----------------------------------------------------------
-    def _get_customer_account_model(self, cr, uid):
-        """
-        Retrieve values from template for customer account.
+        if data is None:
+            data = {}
 
-        :return: The account values
-        :rtype: dict
-        """
-        parent_account = self._get_account_model(cr, uid, 'property_account_receivable')
-        if not parent_account:
-            return False
-        customer_account_model = self._get_data_account_model(parent_account)
-        customer_account_model['type'] = 'receivable'
-        return customer_account_model
+        company_id = data.get('company_id',  self._user_company(cr, uid, context=context))
+        args = [
+            ('company_id', '=', company_id),
+            ('partner_type', '=', type),
+        ]
 
-    def _get_customer_account_sequence(self, cr, uid):
-        """
-        Retrieve customer sequence next value.
+        if type == 'customer':
+            args.append(('code', '=', data.get('customer_type')))
+        elif type == 'supplier':
+            args.append(('code', '=', data.get('supplier_type')))
 
-        :return: The next value from selected sequence
-        :rtype: str
-        """
-        return self._get_account_sequence(cr, uid, 'Customer account')
+        acc_type_obj = self.pool.get('account.generator.type')
+        type_ids = acc_type_obj.search(cr, uid, args, context=context)
+        if type_ids and len(type_ids) == 1:
+            gen = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
+            gen_dict = {
+                'acc_name': data.get('name', 'Unknown'),
+                'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id.prefix),
+            }
+            new_acc = self._create_account_from_template(cr, uid, acc_value=gen_dict, acc_company=company_id,
+                            acc_tmpl=gen.account_template_id, acc_parent=gen.account_parent_id.id, context=context)
+            return self.pool.get('account.account').create(cr, uid, new_acc, context=context)
+        return False
 
-    #----------------------------------------------------------
-    #   Private methods SUPPLIER ONLY
-    #----------------------------------------------------------
-    def _get_supplier_account_model(self, cr, uid):
-        """
-        Retrieve values from template for supplier account.
-
-        :return: The account values
-        :rtype: dict
-        """
-        parent_account = self._get_account_model(cr, uid, 'property_account_payable')
-        if not parent_account:
-            return False
-        supplier_account_model = self._get_data_account_model(parent_account)
-        supplier_account_model['type'] = 'payable'
-        return supplier_account_model
-
-    def _get_supplier_account_sequence(self, cr, uid):
-        """
-        Retrieve supplier sequence next value.
-
-        :return: The next value from selected sequence
-        :rtype: str
-        """
-        return self._get_account_sequence(cr, uid, 'Supplier account')
-
-    # #########################################################
-    #       O V E R L O A D     O S V
-    # #########################################################
     def create(self, cr, uid, data, context=None):
         """
         When create a customer and supplier, we create the account code
@@ -285,43 +230,47 @@ class res_partner(osv.osv):
         if context is None:
             context = {}
 
-        new_id = super(res_partner, self).create(cr, uid, data, context)
         if not context.get('skip_account_customer', False):
-            if data.get('customer', 0) == 1 or data.get('supplier', 0) == 1:
-                self.write(cr, uid, [new_id], {}, context=context)
-        return new_id
+            acc_obj = self.pool.get('account.account')
+            if data.get('customer', 0) == 1:
+                account = acc_obj.read(cr, uid, data.get('property_account_receivable'), ['type'], context=context)
+                if account['type'] == 'view':
+                    data['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', data, context=context)
+            elif data.get('supplier', 0) == 1:
+                account = acc_obj.read(cr, uid, data.get('property_account_payable'), ['type'], context=context)
+                if account['type'] == 'view':
+                    data['property_account_payable'] = self._create_new_account(cr, uid, 'supplier', data, context=context)
+        return super(res_partner, self).create(cr, uid, data, context)
 
     def write(self, cr, uid, ids, vals, context=None):
         if context is None:
             context = {}
 
         # Update all ids (batch way)
-        osv_stuff = super(res_partner, self).write(cr, uid, ids, vals, context)
-        for partner in self.browse(cr, uid, ids, context=context):
-            # Update one by one
-            #partner = self.browse(cr, uid, [id])[0]
-            # Customer account number
-            default_receivable_account = self._get_account_model(cr, uid, 'property_account_receivable')
-            if default_receivable_account and partner.customer and (partner.property_account_receivable.id == default_receivable_account.id) and not context.get('skip_account_customer', False):
-                account_patern = self._get_customer_account_model(cr, uid)
-                account_code = self._get_compute_account_number(cr, uid, partner, self._get_customer_account_sequence(cr, uid))
-                account_patern['name'] = _('Customer : ') + partner.name  # becarefull on translat° & length
-                account_patern['name'] = account_patern['name'][:128]
-                account_patern['code'] = account_code
-                debug(account_patern)
-                customer_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
-                super(res_partner, self).write(cr, uid, partner.id, {'property_account_receivable': customer_account_id})
-            # Supplier account number
-            default_payable_account = self._get_account_model(cr, uid, 'property_account_payable')
-            if default_payable_account and partner.supplier and (partner.property_account_payable.id == default_payable_account.id) and not context.get('skip_account_supplier', False):
-                account_patern = self._get_supplier_account_model(cr, uid)
-                account_code = self._get_compute_account_number(cr, uid, partner, self._get_supplier_account_sequence(cr, uid))
-                account_patern['name'] = _('Supplier : ') + partner.name  # becarefull on translat° & length
-                account_patern['name'] = account_patern['name'][:128]
-                account_patern['code'] = account_code
-                debug(account_patern)
-                supplier_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
-                super(res_partner, self).write(cr, uid, partner.id, {'property_account_payable': supplier_account_id})
+        osv_stuff = super(res_partner, self).write(cr, uid, ids, vals, context=context)
+        #for partner in self.browse(cr, uid, ids, context=context):
+        #    # Customer account number
+        #    default_receivable_account = self._get_account_model(cr, uid, 'property_account_receivable', partner)
+        #    if default_receivable_account and partner.customer and (partner.property_account_receivable.id == default_receivable_account.id) and not context.get('skip_account_customer', False):
+        #        account_patern = self._get_customer_account_model(cr, uid)
+        #        account_code = self._get_compute_account_number(cr, uid, partner, self._get_customer_account_sequence(cr, uid))
+        #        account_patern['name'] = _('Customer : ') + partner.name  # becarefull on translat° & length
+        #        account_patern['name'] = account_patern['name'][:128]
+        #        account_patern['code'] = account_code
+        #        debug(account_patern)
+        #        customer_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
+        #        super(res_partner, self).write(cr, uid, partner.id, {'property_account_receivable': customer_account_id})
+        #    # Supplier account number
+        #    default_payable_account = self._get_account_model(cr, uid, 'property_account_payable')
+        #    if default_payable_account and partner.supplier and (partner.property_account_payable.id == default_payable_account.id) and not context.get('skip_account_supplier', False):
+        #        account_patern = self._get_supplier_account_model(cr, uid)
+        #        account_code = self._get_compute_account_number(cr, uid, partner, self._get_supplier_account_sequence(cr, uid))
+        #        account_patern['name'] = _('Supplier : ') + partner.name  # becarefull on translat° & length
+        #        account_patern['name'] = account_patern['name'][:128]
+        #        account_patern['code'] = account_code
+        #        debug(account_patern)
+        #        supplier_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
+        #        super(res_partner, self).write(cr, uid, partner.id, {'property_account_payable': supplier_account_id})
 
         return osv_stuff
 
