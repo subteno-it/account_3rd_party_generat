@@ -131,11 +131,9 @@ class res_partner(osv.osv):
             body = seq_patern[len(prefix) + 1:][:len(seq_patern) - len(prefix) - len(suffix) - 2]
 
             ar_args = body.split('|')
+
             # partner field is always first
-            if isinstance(partner, dict):
-                partner_value = partner.get(ar_args[0], '')
-            else:
-                partner_value = getattr(partner, ar_args[0])
+            partner_value = getattr(partner, ar_args[0])
 
             if partner_value:
                 # Modificators
@@ -204,16 +202,16 @@ class res_partner(osv.osv):
         if data is None:
             data = {}
 
-        company_id = data.get('company_id',  self._user_company(cr, uid, context=context))
+        company_id = getattr(data, 'company_id', False) or  self._user_company(cr, uid, context=context)
         args = [
             ('company_id', '=', company_id),
             ('partner_type', '=', type),
         ]
 
         if type == 'customer':
-            args.append(('code', '=', data.get('customer_type')))
+            args.append(('code', '=', data.customer_type))
         elif type == 'supplier':
-            args.append(('code', '=', data.get('supplier_type')))
+            args.append(('code', '=', data.supplier_type))
 
         acc_type_obj = self.pool.get('account.generator.type')
         type_ids = acc_type_obj.search(cr, uid, args, context=context)
@@ -221,7 +219,7 @@ class res_partner(osv.osv):
             gen = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
             if gen.ir_sequence_id:
                 gen_dict = {
-                    'acc_name': data.get('name', 'Unknown'),
+                    'acc_name': data.name,
                     'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id.prefix),
                 }
                 new_acc = self._create_account_from_template(cr, uid, acc_value=gen_dict, acc_company=company_id,
@@ -239,34 +237,30 @@ class res_partner(osv.osv):
         if context is None:
             context = {}
 
-        if not context.get('skip_account_customer', False):
-            acc_obj = self.pool.get('account.account')
-            if data.get('customer', 0) == 1:
-                account = acc_obj.read(cr, uid, data.get('property_account_receivable'), ['type'], context=context)
-                if account['type'] == 'view':
-                    data['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', data, context=context)
-            elif data.get('supplier', 0) == 1:
-                account = acc_obj.read(cr, uid, data.get('property_account_payable'), ['type'], context=context)
-                if account['type'] == 'view':
-                    data['property_account_payable'] = self._create_new_account(cr, uid, 'supplier', data, context=context)
-        return super(res_partner, self).create(cr, uid, data, context)
+        res = super(res_partner, self).create(cr, uid, data, context)
+        self.write(cr, uid, [res], context=context)
+        return res
 
-    def write(self, cr, uid, ids, vals, context=None):
+    def write(self, cr, uid, ids, vals=None, context=None):
         if context is None:
             context = {}
 
-        print 'vals ', vals
-        # Compute account code if customer case is check
-        # or if the customer account change
-        if vals.get('customer', 0) == 1 or vals.get('property_account_receivable'):
-            pass
+        if vals is None:
+            vals = {}
 
-        # Compute account code if supplier case is check
-        # or if the customer account change
-        if vals.get('supplier', 0) == 1 or vals.get('property_account_payable'):
-            pass
+        res= True
+        if not context.get('skip_account_customer', False):
+            for pnr in self.browse(cr, uid, ids, context=context):
+                if (pnr.customer or vals.get('customer', 0) == 1) and pnr.property_account_receivable.type == 'view':
+                    vals['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', pnr, context=context)
 
-        return super(res_partner, self).write(cr, uid, ids, vals, context=context)
+                if (pnr.supplier or vals.get('supplier', 0) == 1) and pnr.property_account_payable.type == 'view':
+                    vals['property_account_payable'] = self._create_new_account(cr, uid, 'supplier', pnr, context=context)
+
+                if not super(res_partner, self).write(cr, uid, [pnr.id], vals, context=context):
+                    res = False
+
+        return res
 
 res_partner()
 
