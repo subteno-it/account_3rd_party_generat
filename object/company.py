@@ -34,24 +34,25 @@ class AccountGeneratorType(osv.osv):
 
     _columns = {
         'partner_type': fields.selection([('customer', 'Customer'), ('supplier', 'Supplier')], 'Type', required=True, help='Select the type of partner'),
-        'code': fields.char('code', size=12, required=True, help='Code use to store value in the database'),
-        'name': fields.char('Name', size=64, required=True, help='Name appear on the partner form'),
+        'code': fields.char('code', size=16, required=True, help='Code use to store value in the database'),
+        'name': fields.char('Name', size=64, required=True, translate=True, help='Name appear on the partner form'),
         'default_value': fields.boolean('Default value', help='Default value for this type'),
         'ir_sequence_id': fields.many2one('ir.sequence', 'Sequence', help='Sequence use to generate the code'),
         'account_template_id': fields.many2one('account.account.template', 'Account template', help='Account use to create the new one'),
         'account_parent_id': fields.many2one('account.account', 'Parent account', help='Select the parent account of the new account generate'),
+        'account_reference_id': fields.many2one('account.account', 'Account reference', help='If no sequence define, this account reference is choose all the time'),
         'company_id': fields.many2one('res.company', 'Company', help='Company where this configuration is apply', required=True),
     }
 
     _defaults = {
-        'partner_type': lambda *a: 'customer',
+        'partner_type': lambda *a: False,
         'default_value': lambda *a: False,
         'ir_sequence_id': lambda *a: False,
         'account_template_id': lambda *a: False,
         'account_parent_id': lambda *a: False,
     }
 
-    def onchange_partner_type(self, cr, uid, ids, partner_type='customer', context=None):
+    def onchange_partner_type(self, cr, uid, ids, partner_type=None, context=None):
         """
         When partner type change, we must change domain for:
         - account_template_id
@@ -60,15 +61,23 @@ class AccountGeneratorType(osv.osv):
         if context is None:
             context = {}
 
-        if partner_type == 'customer':
+        if partner_type is None or partner_type == False:
+            domain = {
+                'account_template_id': [('id', '=', 0)],
+                'account_parent_id': [('id', '=', 0)],
+                'account_reference_id': [('id', '=', 0)],
+            }
+        elif partner_type == 'customer':
             domain = {
                 'account_template_id': [('type', '=', 'receivable')],
                 'account_parent_id': [('type', 'in', ('view', 'receivable'))],
+                'account_reference_id': [('type', '=', 'receivable')],
             }
         elif partner_type == 'supplier':
             domain = {
                 'account_template_id': [('type', '=', 'payable')],
                 'account_parent_id': [('type', 'in', ('view', 'payable'))],
+                'account_reference_id': [('type', '=', 'payable')],
             }
         else:
             raise osv.except_osv(_('Error'), _('Error in process, contact your administrator!'))

@@ -219,13 +219,16 @@ class res_partner(osv.osv):
         type_ids = acc_type_obj.search(cr, uid, args, context=context)
         if type_ids and len(type_ids) == 1:
             gen = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
-            gen_dict = {
-                'acc_name': data.get('name', 'Unknown'),
-                'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id.prefix),
-            }
-            new_acc = self._create_account_from_template(cr, uid, acc_value=gen_dict, acc_company=company_id,
-                            acc_tmpl=gen.account_template_id, acc_parent=gen.account_parent_id.id, context=context)
-            return self.pool.get('account.account').create(cr, uid, new_acc, context=context)
+            if gen.ir_sequence_id:
+                gen_dict = {
+                    'acc_name': data.get('name', 'Unknown'),
+                    'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id.prefix),
+                }
+                new_acc = self._create_account_from_template(cr, uid, acc_value=gen_dict, acc_company=company_id,
+                                acc_tmpl=gen.account_template_id, acc_parent=gen.account_parent_id.id, context=context)
+                return self.pool.get('account.account').create(cr, uid, new_acc, context=context)
+            else:
+                return gen.account_reference_id and gen.account_reference_id.id or False
         return False
 
     def create(self, cr, uid, data, context=None):

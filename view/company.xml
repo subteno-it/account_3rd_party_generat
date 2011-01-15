@@ -34,14 +34,14 @@
             <field name="type">tree</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
-                <tree string="Account generator" editable="bottom">
-                    <field name="partner_type" width="200" on_change="onchange_partner_type(partner_type)"/>
+                <tree string="Account generator">
+                    <field name="partner_type" width="200" on_change="onchange_partner_type(partner_type)" required="1"/>
                     <field name="code" width="150"/>
                     <field name="name" width="200"/>
                     <field name="default_value"/>
+                    <field name="ir_sequence_id" width="150" domain="[('code','=', 'account.partner.third_part')]"/>
                     <field name="account_template_id" width="150" domain="[('type','=', 'receivable')]"/>
                     <field name="account_parent_id" width="150" domain="[('type','in', ('view', 'receivable'))]"/>
-                    <field name="ir_sequence_id" width="150" domain="[('code','=', 'account.partner.third_part')]"/>
                 </tree>
             </field>
         </record>
@@ -53,13 +53,22 @@
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <form string="Account generator">
-                    <field name="name" select="1"/>
+                    <field name="partner_type" select="1" on_change="onchange_partner_type(partner_type)" required="1"/>
                     <field name="code" select="1"/>
-                    <field name="partner_type" select="1" on_change="onchange_partner_type(partner_type)"/>
-                    <field name="account_template_id" select="1" domain="[('type','=', 'receivable')]"/>
-                    <field name="account_parent_id" select="1" domain="[('type','in', ('view', 'receivable'))]"/>
+                    <field name="name" select="1" colspan="4"/>
                     <field name="ir_sequence_id" select="1" domain="[('code','=', 'account.partner.third_part')]"/>
                     <field name="default_value" select="1"/>
+                    <separator string="Generate template (with treatment)" colspan="4"/>
+                    <field name="account_template_id" select="1" 
+                        domain="[('type','in', ('receivable','payable'))]"
+                        attrs="{'required': [('ir_sequence_id','!=', False)], 'readonly': [('ir_sequence_id','=', False)]}"/>
+                    <field name="account_parent_id" select="1" 
+                        domain="[('type','in', ('view', 'receivable', 'payable'))]"
+                        attrs="{'required': [('ir_sequence_id','!=', False)], 'readonly': [('ir_sequence_id','=', False)]}"/>
+                    <separator string="Reference template (no treatment)" colspan="4"/>
+                    <field name="account_reference_id" 
+                        domain="[('type','in', ('receivable','payable'))]"
+                        attrs="{'required': [('ir_sequence_id','=', False)], 'readonly': [('ir_sequence_id','!=', False)]}"/>
                 </form>
             </field>
         </record>
