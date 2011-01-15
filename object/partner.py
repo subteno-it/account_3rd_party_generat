@@ -252,33 +252,18 @@ class res_partner(osv.osv):
         if context is None:
             context = {}
 
-        # Update all ids (batch way)
-        osv_stuff = super(res_partner, self).write(cr, uid, ids, vals, context=context)
-        #for partner in self.browse(cr, uid, ids, context=context):
-        #    # Customer account number
-        #    default_receivable_account = self._get_account_model(cr, uid, 'property_account_receivable', partner)
-        #    if default_receivable_account and partner.customer and (partner.property_account_receivable.id == default_receivable_account.id) and not context.get('skip_account_customer', False):
-        #        account_patern = self._get_customer_account_model(cr, uid)
-        #        account_code = self._get_compute_account_number(cr, uid, partner, self._get_customer_account_sequence(cr, uid))
-        #        account_patern['name'] = _('Customer : ') + partner.name  # becarefull on translat° & length
-        #        account_patern['name'] = account_patern['name'][:128]
-        #        account_patern['code'] = account_code
-        #        debug(account_patern)
-        #        customer_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
-        #        super(res_partner, self).write(cr, uid, partner.id, {'property_account_receivable': customer_account_id})
-        #    # Supplier account number
-        #    default_payable_account = self._get_account_model(cr, uid, 'property_account_payable')
-        #    if default_payable_account and partner.supplier and (partner.property_account_payable.id == default_payable_account.id) and not context.get('skip_account_supplier', False):
-        #        account_patern = self._get_supplier_account_model(cr, uid)
-        #        account_code = self._get_compute_account_number(cr, uid, partner, self._get_supplier_account_sequence(cr, uid))
-        #        account_patern['name'] = _('Supplier : ') + partner.name  # becarefull on translat° & length
-        #        account_patern['name'] = account_patern['name'][:128]
-        #        account_patern['code'] = account_code
-        #        debug(account_patern)
-        #        supplier_account_id = self.pool.get('account.account').create(cr, uid, account_patern)
-        #        super(res_partner, self).write(cr, uid, partner.id, {'property_account_payable': supplier_account_id})
+        print 'vals ', vals
+        # Compute account code if customer case is check
+        # or if the customer account change
+        if vals.get('customer', 0) == 1 or vals.get('property_account_receivable'):
+            pass
 
-        return osv_stuff
+        # Compute account code if supplier case is check
+        # or if the customer account change
+        if vals.get('supplier', 0) == 1 or vals.get('property_account_payable'):
+            pass
+
+        return super(res_partner, self).write(cr, uid, ids, vals, context=context)
 
 res_partner()
 
