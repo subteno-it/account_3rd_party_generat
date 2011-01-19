@@ -42,6 +42,10 @@ class AccountGeneratorType(osv.osv):
         'account_parent_id': fields.many2one('account.account', 'Parent account', help='Select the parent account of the new account generate'),
         'account_reference_id': fields.many2one('account.account', 'Account reference', help='If no sequence define, this account reference is choose all the time'),
         'company_id': fields.many2one('res.company', 'Company', help='Company where this configuration is apply', required=True),
+        'field_select': fields.selection([('none', ''), ('name','name'), ('ref','ref')], 'Select Field', help="Select the field where the code be generate" ),
+        'code_pre': fields.char('Code Prefix', size=64, ),
+        'code_suf': fields.char('Code Suffix', size=64, ),
+        'code_seq_id': fields.many2one('ir.sequence', 'Sequence', domain=[('code', '=', 'res.partner')]),
     }
 
     _defaults = {
@@ -50,6 +54,7 @@ class AccountGeneratorType(osv.osv):
         'ir_sequence_id': lambda *a: False,
         'account_template_id': lambda *a: False,
         'account_parent_id': lambda *a: False,
+        'field_select': lambda *a: 'none',
     }
 
     def onchange_partner_type(self, cr, uid, ids, partner_type=None, context=None):

@@ -94,6 +94,45 @@ class res_partner(osv.osv):
         t = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
         return t.code
 
+    def _partner_default_code(self, cr, uid, type=None, context=None):
+        """
+        Create the a new code base on a company configuration
+
+        :param type: Type of the partner (customer or supplier)
+        :type  type: str
+        :param data: dict of create value
+        :type  data: dict
+        :return: the new code
+        :type: char
+        """
+        if context is None:
+            context = {}
+
+        if data is None:
+            data = {}
+
+        company_id = getattr(data, 'company_id', False) or  self._user_company(cr, uid, context=context)
+        args = [
+            ('company_id', '=', company_id),
+            ('partner_type', '=', type),
+        ]
+
+        if type == 'customer':
+            args.append(('code', '=', data.customer_type))
+        elif type == 'supplier':
+            args.append(('code', '=', data.supplier_type))
+
+        acc_type_obj = self.pool.get('account.generator.type')
+        type_ids = acc_type_obj.search(cr, uid, args, context=context)
+        if type_ids and len(type_ids) == 1:
+            gen = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
+            if gen.ir_sequence_id:
+                return self.pool.get('account.account').create(cr, uid, new_acc, context=context)
+            else:
+                return gen.account_reference_id and gen.account_reference_id.id or False
+        return False
+
+
     def _customer_default_value(self, cr, uid, context=None):
         return self._partner_default_value(cr, uid, 'customer', context=context)
 
