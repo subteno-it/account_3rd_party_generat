@@ -39,7 +39,7 @@
                     <field name="code" width="150"/>
                     <field name="name" width="200"/>
                     <field name="default_value"/>
-                    <field name="lock_partner"/>
+                    <field name="lock_partner_name"/>
                     <field name="ir_sequence_id" width="150" domain="[('code','=', 'account.partner.third_part')]"/>
                     <field name="account_template_id" width="150" domain="[('type','=', 'receivable')]"/>
                     <field name="account_parent_id" width="150" domain="[('type','in', ('view', 'receivable'))]"/>
@@ -59,7 +59,7 @@
                     <field name="name" select="1" colspan="4"/>
                     <field name="ir_sequence_id" select="1" domain="[('code','=', 'account.partner.third_part')]"/>
                     <field name="default_value" select="1"/>
-                    <field name="lock_partner" select="1"/>
+                    <field name="lock_partner_name" select="1"/>
                     <separator string="Generate template (with treatment)" colspan="4"/>
                     <field name="account_template_id" select="1" 
                         domain="[('type','in', ('receivable','payable'))]"

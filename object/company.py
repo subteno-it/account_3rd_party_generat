@@ -37,7 +37,7 @@ class AccountGeneratorType(osv.osv):
         'code': fields.char('code', size=16, required=True, help='Code use to store value in the database'),
         'name': fields.char('Name', size=64, required=True, translate=True, help='Name appear on the partner form'),
         'default_value': fields.boolean('Default value', help='Default value for this type'),
-        'lock_partner': fields.boolean('Lock partner name', help='Partner\'s name is locked when his account has at least one account move'),
+        'lock_partner_name': fields.boolean('Lock partner name', help='Partner\'s name is locked when his account has at least one account move'),
         'ir_sequence_id': fields.many2one('ir.sequence', 'Sequence', help='Sequence use to generate the code'),
         'account_template_id': fields.many2one('account.account.template', 'Account template', help='Account use to create the new one'),
         'account_parent_id': fields.many2one('account.account', 'Parent account', help='Select the parent account of the new account generate'),
