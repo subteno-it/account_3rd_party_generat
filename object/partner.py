@@ -139,9 +139,37 @@ class res_partner(osv.osv):
     def _supplier_default_value(self, cr, uid, context=None):
         return self._partner_default_value(cr, uid, 'supplier', context=context)
 
+    def _is_name_locked(self, cr, uid, ids, fieldname, arg, context=None):
+        if context is None:
+            context = {}
+
+        print ids
+        # Retrieve selected partners
+        partners = self.pool.get('res.partner').browse(cr, uid, ids, context=context)
+
+        # Results dictionary
+        res = {}
+
+        for partner in partners:
+            # Retrieve partner's account
+            account = self.pool.get('account.account').browse(cr, uid, partner.property_account_receivable.id, context=context)
+            print account
+
+            # Computes value from account
+            #val = True
+            #res[partner.id] = {fieldname: val}
+
+#        return count >= 1
+        return res
+
     _columns = {
         'customer_type': fields.selection(_customer_type, 'Customer type'),
         'supplier_type': fields.selection(_supplier_type, 'Supplier type'),
+        'is_name_locked': fields.function(_is_name_locked,
+                            method=True,
+                            string='Name locked',
+                            type='boolean',
+                            store=False, ),
     }
 
     _defaults = {
@@ -153,17 +181,19 @@ class res_partner(osv.osv):
     #----------------------------------------------------------
     #   Private methods C&S
     #----------------------------------------------------------
-    def _get_compute_account_number(self, cr, uid, partner, seq_patern):
+    def _get_compute_account_number(self, cr, uid, partner, sequence):
         """Compute account code based on partner and sequence
 
         :param partner: current partner
         :type  partner: osv.osv.browse
-        :param seq_patern: the sequence witch will be use as a pattern/template
-        :type  seq_patern: str
+        :param sequence: the sequence witch will be use as a pattern/template
+        :type  sequence: osv.osv.browse
 
         :return: the account code/number
         :rtype: str
         """
+        seq_patern = sequence.prefix
+
         if seq_patern.find('{') >= 0:
             prefix = seq_patern[:seq_patern.index('{')]
             suffix = seq_patern[seq_patern.index('}') + 1:]
@@ -188,13 +218,14 @@ class res_partner(osv.osv):
         # is there internal sequence ?
         pos_iseq = account_number.find('#')
         if pos_iseq >= 0:
-            nzf = account_number.count('#')
             rootpart = account_number[:pos_iseq]
+            nzf = sequence.padding - len(rootpart)
             # verify if root of this number is existing
-            arAcc_ids = self.pool.get('account.account').search(cr, uid, [('code', 'like', rootpart)])
-            cnt = len(arAcc_ids)
-            next_inc = ("%0d" % int(cnt + 1)).zfill(nzf)
-            account_number = account_number.replace('#' * nzf, next_inc)
+            next_inc = ("%d" % sequence.number_next).zfill(nzf)
+            account_number = account_number.replace('#', next_inc)
+
+            # Increments sequence number
+            self.pool.get('ir.sequence').write(cr, uid, [sequence.id], {'number_next': sequence.number_next + sequence.number_increment})
 
         return account_number
 
@@ -241,6 +272,8 @@ class res_partner(osv.osv):
         if data is None:
             data = {}
 
+        # TODO : fields_get sur res.partner pour éviter l'erreur de getattr
+        # TODO : déplacer la sélection de l'account type dans une méthode à part
         company_id = getattr(data, 'company_id', False) or  self._user_company(cr, uid, context=context)
         args = [
             ('company_id', '=', company_id),
@@ -259,7 +292,7 @@ class res_partner(osv.osv):
             if gen.ir_sequence_id:
                 gen_dict = {
                     'acc_name': data.name,
-                    'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id.prefix),
+                    'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id),
                 }
                 new_acc = self._create_account_from_template(cr, uid, acc_value=gen_dict, acc_company=company_id,
                                 acc_tmpl=gen.account_template_id, acc_parent=gen.account_parent_id.id, context=context)
@@ -286,6 +319,8 @@ class res_partner(osv.osv):
 
         if vals is None:
             vals = {}
+
+        #TODO : check si name est dans les valeurs modifiées et qu'il y a des écritures avec le lock_name dans le compte, alors raise erreur
 
         res= True
         if not context.get('skip_account_customer', False):
