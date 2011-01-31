@@ -351,7 +351,7 @@ class res_partner(osv.osv):
                     if (len(locked) == 1) \
                         and ('lock_partner_name' in locked[0]) \
                         and locked[0]['lock_partner_name'] \
-                        and acc_move_line_obj.search(cr, uid, [('account_id', '=', pnr.property_account_receivable.id)], context=context):
+                        and acc_move_line_obj.search(cr, uid, [('account_id', '=', pnr.property_account_payable.id)], context=context):
                             raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
 
         res= True
