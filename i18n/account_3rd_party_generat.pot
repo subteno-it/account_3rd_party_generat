@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.15\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2011-01-09 20:46:35+0000\n"
-"PO-Revision-Date: 2011-01-09 20:46:35+0000\n"
+"POT-Creation-Date: 2011-01-31 14:31:16+0000\n"
+"PO-Revision-Date: 2011-01-31 14:31:16+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -28,6 +28,11 @@ msgstr ""
 #. module: account_3rd_party_generat
 #: view:wizard.install.third.part.accounts:0
 msgid "Account number"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: help:account.generator.type,code:0
+msgid "Code use to store value in the database"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -57,8 +62,8 @@ msgid "Invalid model name in the action definition."
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: field:account.generator.type,default_value:0
-msgid "Default value"
+#: help:account.generator.type,field_select:0
+msgid "Select the field where the code be generate"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -73,23 +78,23 @@ msgid "Too many default value define for %s type"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: code:addons/account_3rd_party_generat/object/partner.py:0
-#, python-format
-msgid "You need to define the %s sequence' % seq_name))\n"
-"        sequence_data = self.pool.get('ir.sequence"
-msgstr ""
-
-#. module: account_3rd_party_generat
 #: field:account.generator.type,partner_type:0
 msgid "Type"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: code:addons/account_3rd_party_generat/object/partner.py:0
-#, python-format
-msgid "You need to define ONE default account number in properties for %s' % model_name))\n"
-"            return False\n"
-"        property_data = self.pool.get('ir.property"
+#: model:ir.module.module,shortdesc:account_3rd_party_generat.module_meta_information
+msgid "third parties account number generation"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: field:account.generator.type,code:0
+msgid "code"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: field:account.generator.type,lock_partner_name:0
+msgid "Lock partner name"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -140,9 +145,8 @@ msgid "wizard.install.third.part.accounts"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: code:addons/account_3rd_party_generat/object/partner.py:0
-#, python-format
-msgid "Supplier : "
+#: selection:account.generator.type,field_select:0
+msgid "ref"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -171,6 +175,11 @@ msgid "Name"
 msgstr ""
 
 #. module: account_3rd_party_generat
+#: field:account.generator.type,account_reference_id:0
+msgid "Account reference"
+msgstr ""
+
+#. module: account_3rd_party_generat
 #: field:res.company,account_generator_type_ids:0
 msgid "Account generator type"
 msgstr ""
@@ -178,6 +187,11 @@ msgstr ""
 #. module: account_3rd_party_generat
 #: help:account.generator.type,account_parent_id:0
 msgid "Select the parent account of the new account generate"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: help:account.generator.type,account_reference_id:0
+msgid "If no sequence define, this account reference is choose all the time"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -192,6 +206,11 @@ msgid "Account template"
 msgstr ""
 
 #. module: account_3rd_party_generat
+#: view:account.generator.type:0
+msgid "Reference template (no treatment)"
+msgstr ""
+
+#. module: account_3rd_party_generat
 #: code:addons/account_3rd_party_generat/object/company.py:0
 #: code:addons/account_3rd_party_generat/object/partner.py:0
 #, python-format
@@ -199,9 +218,13 @@ msgid "Error"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: code:addons/account_3rd_party_generat/object/partner.py:0
-#, python-format
-msgid "Error !"
+#: field:account.generator.type,default_value:0
+msgid "Default value"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: field:account.generator.type,code_pre:0
+msgid "Code Prefix"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -210,14 +233,13 @@ msgid "Sequence use to generate the code"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: code:addons/account_3rd_party_generat/object/partner.py:0
-#, python-format
-msgid "Customer : "
+#: field:res.partner,supplier_type:0
+msgid "Supplier type"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: field:res.partner,supplier_type:0
-msgid "Supplier type"
+#: field:account.generator.type,field_select:0
+msgid "Select Field"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -240,13 +262,30 @@ msgid ".\n"
 msgstr ""
 
 #. module: account_3rd_party_generat
+#: selection:account.generator.type,field_select:0
+msgid "name"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: field:account.generator.type,code_seq_id:0
 #: field:account.generator.type,ir_sequence_id:0
 msgid "Sequence"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: model:ir.module.module,shortdesc:account_3rd_party_generat.module_meta_information
-msgid "third parties account number generation"
+#: help:account.generator.type,lock_partner_name:0
+msgid "Partner's name is locked when his account has at least one account move"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: code:addons/account_3rd_party_generat/object/partner.py:0
+#, python-format
+msgid "You cannot change partner\'s name when his account has moves"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: field:account.generator.type,code_suf:0
+msgid "Code Suffix"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -257,5 +296,10 @@ msgstr ""
 #. module: account_3rd_party_generat
 #: field:wizard.install.third.part.accounts,receivable_id:0
 msgid "Account receivable"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: view:account.generator.type:0
+msgid "Generate template (with treatment)"
 msgstr ""
 
