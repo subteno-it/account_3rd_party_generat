@@ -139,37 +139,9 @@ class res_partner(osv.osv):
     def _supplier_default_value(self, cr, uid, context=None):
         return self._partner_default_value(cr, uid, 'supplier', context=context)
 
-    def _is_name_locked(self, cr, uid, ids, fieldname, arg, context=None):
-        if context is None:
-            context = {}
-
-        print ids
-        # Retrieve selected partners
-        partners = self.pool.get('res.partner').browse(cr, uid, ids, context=context)
-
-        # Results dictionary
-        res = {}
-
-        for partner in partners:
-            # Retrieve partner's account
-            account = self.pool.get('account.account').browse(cr, uid, partner.property_account_receivable.id, context=context)
-            print account
-
-            # Computes value from account
-            #val = True
-            #res[partner.id] = {fieldname: val}
-
-#        return count >= 1
-        return res
-
     _columns = {
         'customer_type': fields.selection(_customer_type, 'Customer type'),
         'supplier_type': fields.selection(_supplier_type, 'Supplier type'),
-        'is_name_locked': fields.function(_is_name_locked,
-                            method=True,
-                            string='Name locked',
-                            type='boolean',
-                            store=False, ),
     }
 
     _defaults = {
@@ -272,9 +244,12 @@ class res_partner(osv.osv):
         if data is None:
             data = {}
 
-        # TODO : fields_get sur res.partner pour éviter l'erreur de getattr
         # TODO : déplacer la sélection de l'account type dans une méthode à part
-        company_id = getattr(data, 'company_id', False) or  self._user_company(cr, uid, context=context)
+        fields = self.pool.get('res.partner').fields_get(cr, uid, ['company_id'], context=context)
+        if 'company_id' in fields:
+            company_id = getattr(data, 'company_id', False)
+        else:
+            company_id = self._user_company(cr, uid, context=context)
         args = [
             ('company_id', '=', company_id),
             ('partner_type', '=', type),
