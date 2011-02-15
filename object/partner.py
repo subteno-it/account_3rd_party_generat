@@ -336,23 +336,25 @@ class res_partner(osv.osv):
                 company_id = self._get_company_id(cr, uid, pnr, context=context)
                 if (pnr.customer or vals.get('customer', 0) == 1):
                     acc_type_id = self._get_acc_type_id(cr, uid, company_id, 'customer', pnr, context=context)
-                    locked = self.pool.get('account.generator.type').read(cr, uid, [acc_type_id], ['lock_partner_name'], context=context)
-                    # Check if account type locks partner's name and if partner account has at leasr one move
-                    if (len(locked) == 1) \
-                        and ('lock_partner_name' in locked[0]) \
-                        and locked[0]['lock_partner_name'] \
-                        and acc_move_line_obj.search(cr, uid, [('account_id', '=', pnr.property_account_receivable.id)], context=context):
-                            raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
+                    if acc_type_id:
+                        locked = self.pool.get('account.generator.type').read(cr, uid, [acc_type_id], ['lock_partner_name'], context=context)
+                        # Check if account type locks partner's name and if partner account has at leasr one move
+                        if (len(locked) == 1) \
+                            and ('lock_partner_name' in locked[0]) \
+                            and locked[0]['lock_partner_name'] \
+                            and acc_move_line_obj.search(cr, uid, [('account_id', '=', pnr.property_account_receivable.id)], context=context):
+                                raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
 
                 if (pnr.supplier or vals.get('supplier', 0) == 1):
                     acc_type_id = self._get_acc_type_id(cr, uid, company_id, 'supplier', pnr, context=context)
-                    locked = self.pool.get('account.generator.type').read(cr, uid, [acc_type_id], ['lock_partner_name'], context=context)
-                    # Check if account type locks partner's name and if partner account has at leasr one move
-                    if (len(locked) == 1) \
-                        and ('lock_partner_name' in locked[0]) \
-                        and locked[0]['lock_partner_name'] \
-                        and acc_move_line_obj.search(cr, uid, [('account_id', '=', pnr.property_account_payable.id)], context=context):
-                            raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
+                    if acc_type_id:
+                        locked = self.pool.get('account.generator.type').read(cr, uid, [acc_type_id], ['lock_partner_name'], context=context)
+                        # Check if account type locks partner's name and if partner account has at leasr one move
+                        if (len(locked) == 1) \
+                            and ('lock_partner_name' in locked[0]) \
+                            and locked[0]['lock_partner_name'] \
+                            and acc_move_line_obj.search(cr, uid, [('account_id', '=', pnr.property_account_payable.id)], context=context):
+                                raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
 
         res= True
         if not context.get('skip_account_customer', False):
