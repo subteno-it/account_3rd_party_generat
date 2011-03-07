@@ -31,7 +31,7 @@
 
 {
     'name': 'third parties account number generation',
-    'version': '1.0.2',
+    'version': '1.0.3',
     'author': 'SISTHEO',
     'website': 'http://www.sistheo.fr',
     'category': 'Generic Modules/Accounting',
