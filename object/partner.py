@@ -318,7 +318,7 @@ class res_partner(osv.osv):
             context = {}
 
         res = super(res_partner, self).create(cr, uid, data, context)
-        self.write(cr, uid, [res], context=context)
+        self.write(cr, uid, [res], {}, context=context)
         return res
 
     def write(self, cr, uid, ids, vals=None, context=None):
