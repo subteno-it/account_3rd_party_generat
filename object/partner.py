@@ -200,20 +200,20 @@ class res_partner(osv.osv):
                     partner_value = mdf_funct()
                     mdf.setval(partner_value)
             account_number = "%s%s%s" % (prefix or '', partner_value or '', suffix or '')
+            # is there internal sequence ?
+            pos_iseq = account_number.find('#')
+            if pos_iseq >= 0:
+                rootpart = account_number[:pos_iseq]
+                nzf = sequence.padding - len(rootpart)
+                # verify if root of this number is existing
+                next_inc = ("%d" % sequence.number_next).zfill(nzf)
+                account_number = account_number.replace('#', next_inc)
+
+                # Increments sequence number
+                self.pool.get('ir.sequence').write(cr, uid, [sequence.id], {'number_next': sequence.number_next + sequence.number_increment})
         else:
-            account_number = seq_patern
-
-        # is there internal sequence ?
-        pos_iseq = account_number.find('#')
-        if pos_iseq >= 0:
-            rootpart = account_number[:pos_iseq]
-            nzf = sequence.padding - len(rootpart)
-            # verify if root of this number is existing
-            next_inc = ("%d" % sequence.number_next).zfill(nzf)
-            account_number = account_number.replace('#', next_inc)
-
-            # Increments sequence number
-            self.pool.get('ir.sequence').write(cr, uid, [sequence.id], {'number_next': sequence.number_next + sequence.number_increment})
+            seq_obj = self.pool.get('ir.sequence')
+            account_number = seq_obj.get_id(cr, uid, sequence.id)
 
         return account_number
 
@@ -360,11 +360,18 @@ class res_partner(osv.osv):
         if not context.get('skip_account_customer', False):
             for pnr in partners:
                 company_id = self._get_company_id(cr, uid, pnr, context=context)
-                if (pnr.customer or vals.get('customer', 0) == 1) and pnr.property_account_receivable.type == 'view':
-                    vals['property_account_receivable'] = self._create_new_account(cr, uid, company_id, 'customer', pnr, context=context)
+                ir_property_obj = self.pool.get('ir.property')
+                if (pnr.customer or vals.get('customer', 0) == 1):
+                    ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_receivable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
+                    ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
+                    if ir_property.value_reference.id == pnr.property_account_receivable.id:
+                        vals['property_account_receivable'] = self._create_new_account(cr, uid, company_id.id, 'customer', pnr, context=context)
 
-                if (pnr.supplier or vals.get('supplier', 0) == 1) and pnr.property_account_payable.type == 'view':
-                    vals['property_account_payable'] = self._create_new_account(cr, uid, company_id, 'supplier', pnr, context=context)
+                if (pnr.supplier or vals.get('supplier', 0) == 1):
+                    ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_payable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
+                    ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
+                    if ir_property.value_reference.id == pnr.property_account_payable.id:
+                        vals['property_account_payable'] = self._create_new_account(cr, uid, company_id.id, 'supplier', pnr, context=context)
 
                 if not super(res_partner, self).write(cr, uid, [pnr.id], vals, context=context):
                     res = False
