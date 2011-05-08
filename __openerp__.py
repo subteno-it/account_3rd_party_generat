@@ -30,10 +30,10 @@
 ##############################################################################
 
 {
-    'name': 'third parties account number generation',
-    'version': '1.0.3',
-    'author': 'SISTHEO',
-    'website': 'http://www.sistheo.fr',
+    'name': 'Third parties account number generation',
+    'version': '1.1',
+    'author': 'SYLEAM Info Services',
+    'website': 'http://www.syleam.fr',
     'category': 'Generic Modules/Accounting',
     'description': """.
     This module is automaticaly create account number in chat of account according to the partner.
@@ -41,15 +41,8 @@
     The same is also done for suppliers.
 
     Credit :
-        EverLibre, Zeekom, Syleam
-
-
-    ------
-    OpenERP Version >= 5.0.7
-    ------
-    Last-update : 2011-01-09
-
-    Date Start : 2010-05-27""",
+        EverLibre, Zeekom
+""",
     'depends': [
         'base',
         'account',
@@ -58,9 +51,9 @@
     'init_xml': [],
     'update_xml': [
         'security/ir.model.access.csv',
-        'data/account_seq.xml',
-        'view/company.xml',
-        'view/partner.xml',
+        'ir_sequence_data.xml',
+        'res_company_view.xml',
+        'res_partner_view.xml',
         'wizard/install_wizard.xml',
     ],
     'demo_xml': [],
