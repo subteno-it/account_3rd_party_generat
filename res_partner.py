@@ -47,6 +47,8 @@ class res_partner(osv.osv):
         fields = self.pool.get('res.partner').fields_get(cr, uid, ['company_id'], context=context)
         if 'company_id' in fields:
             company_id = getattr(data, 'company_id', False)
+            if company_id:
+                company_id = company_id.id
         else:
             company_id = self._user_company(cr, uid, context=context)
 
