@@ -330,6 +330,9 @@ class res_partner(osv.osv):
         if vals is None:
             vals = {}
 
+        if not isinstance(ids, list):
+            ids = [ids]
+
         partners = self.browse(cr, uid, ids, context=context)
         acc_move_line_obj = self.pool.get('account.move.line')
         if 'name' in vals:
