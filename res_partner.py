@@ -365,15 +365,17 @@ class res_partner(osv.osv):
                 ir_property_obj = self.pool.get('ir.property')
                 if (pnr.customer or vals.get('customer', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_receivable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
-                    ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
-                    if ir_property.value_reference.id == pnr.property_account_receivable.id:
-                        vals['property_account_receivable'] = self._create_new_account(cr, uid, company_id, 'customer', pnr, context=context)
+                    if ir_property_ids:
+                        ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
+                        if ir_property.value_reference.id == pnr.property_account_receivable.id:
+                            vals['property_account_receivable'] = self._create_new_account(cr, uid, company_id, 'customer', pnr, context=context)
 
                 if (pnr.supplier or vals.get('supplier', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_payable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
-                    ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
-                    if ir_property.value_reference.id == pnr.property_account_payable.id:
-                        vals['property_account_payable'] = self._create_new_account(cr, uid, company_id, 'supplier', pnr, context=context)
+                    if ir_property_ids:
+                        ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
+                        if ir_property.value_reference.id == pnr.property_account_payable.id:
+                            vals['property_account_payable'] = self._create_new_account(cr, uid, company_id, 'supplier', pnr, context=context)
 
                 if not super(res_partner, self).write(cr, uid, [pnr.id], vals, context=context):
                     res = False
