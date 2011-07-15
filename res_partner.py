@@ -29,67 +29,6 @@ from modificators import Modificator
 class res_partner(osv.osv):
     _inherit = 'res.partner'
 
-    def _user_company(self, cr, uid, context):
-        """
-        Return the company id for the connected user
-        """
-        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        return user.company_id.id
-
-    def _get_company_id(self, cr, uid, data=None, context=None):
-        """
-        Return the company_id for data, or connected user if not found in data
-        """
-        if context is None:
-            context = {}
-
-        # Retrieve company_id
-        fields = self.pool.get('res.partner').fields_get(cr, uid, ['company_id'], context=context)
-        if 'company_id' in fields:
-            company_id = getattr(data, 'company_id', False)
-            if company_id:
-                company_id = company_id.id
-        else:
-            company_id = self._user_company(cr, uid, context=context)
-
-        return company_id
-
-    def _customer_type(self, cr, uid, context=None):
-        """
-        Search all configuration on the company for the customer
-        """
-        if context is None:
-            context = {}
-        args = [
-            ('company_id', '=', self._user_company(cr, uid, context=context)),
-            ('partner_type', '=', 'customer'),
-        ]
-        acc_type_obj = self.pool.get('account.generator.type')
-        type_ids = acc_type_obj.search(cr, uid, args, context=context)
-        res = []
-        if type_ids:
-            for t in acc_type_obj.browse(cr, uid, type_ids, context=context):
-                res.append((t.code, t.name))
-        return res
-
-    def _supplier_type(self, cr, uid, context=None):
-        """
-        Search all configuration on the company for the supplier
-        """
-        if context is None:
-            context = {}
-        args = [
-            ('company_id', '=', self._user_company(cr, uid, context=context)),
-            ('partner_type', '=', 'supplier'),
-        ]
-        acc_type_obj = self.pool.get('account.generator.type')
-        type_ids = acc_type_obj.search(cr, uid, args, context=context)
-        res = []
-        if type_ids:
-            for t in acc_type_obj.browse(cr, uid, type_ids, context=context):
-                res.append((t.code, t.name))
-        return res
-
     def _partner_default_value(self, cr, uid, field='customer', context=None):
         """
         Search the default context
@@ -97,7 +36,6 @@ class res_partner(osv.osv):
         if context is None:
             context = {}
         args = [
-            ('company_id', '=', self._user_company(cr, uid, context=context)),
             ('partner_type', '=', field),
             ('default_value', '=', True),
         ]
@@ -106,71 +44,25 @@ class res_partner(osv.osv):
         if not type_ids:
             return False
         elif len(type_ids) > 1:
-            context = self.pool.get('res.users').context_get(cr, uid)
-            raise osv.except_osv(_('Error'), _('Too many default value define for %s type') % _(field))
+            raise osv.except_osv(_('Error'), _('Too many default values defined for %s type') % _(field))
 
-        t = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
-        return t.code
-
-    def _partner_default_code(self, cr, uid, type=None, context=None):
-        """
-        Create the a new code base on a company configuration
-
-        :param type: Type of the partner (customer or supplier)
-        :type  type: str
-        :param data: dict of create value
-        :type  data: dict
-        :return: the new code
-        :type: char
-        """
-        if context is None:
-            context = {}
-
-        if data is None:
-            data = {}
-
-        company_id = getattr(data, 'company_id', False) or  self._user_company(cr, uid, context=context)
-        args = [
-            ('company_id', '=', company_id),
-            ('partner_type', '=', type),
-        ]
-
-        if type == 'customer':
-            args.append(('code', '=', data.customer_type))
-        elif type == 'supplier':
-            args.append(('code', '=', data.supplier_type))
-
-        acc_type_obj = self.pool.get('account.generator.type')
-        type_ids = acc_type_obj.search(cr, uid, args, context=context)
-        if type_ids and len(type_ids) == 1:
-            gen = acc_type_obj.browse(cr, uid, type_ids[0], context=context)
-            if gen.ir_sequence_id:
-                return self.pool.get('account.account').create(cr, uid, new_acc, context=context)
-            else:
-                return gen.account_reference_id and gen.account_reference_id.id or False
-        return False
-
-
-    def _customer_default_value(self, cr, uid, context=None):
-        return self._partner_default_value(cr, uid, 'customer', context=context)
-
-    def _supplier_default_value(self, cr, uid, context=None):
-        return self._partner_default_value(cr, uid, 'supplier', context=context)
+        return type_ids[0]
 
     _columns = {
-        'customer_type': fields.selection(_customer_type, 'Customer type'),
-        'supplier_type': fields.selection(_supplier_type, 'Supplier type'),
+        'customer_type': fields.many2one('account.generator.type', 'Customer type', domain=[('partner_type', '=', 'customer')], help='Customer account type'),
+        'supplier_type': fields.many2one('account.generator.type', 'Supplier type', domain=[('partner_type', '=', 'supplier')], help='Supplier account type'),
     }
 
     _defaults = {
-        'customer': lambda *a: 0,   # Do not compute account number if not necessary
-        'customer_type': _customer_default_value,
-        'supplier_type': _supplier_default_value,
+        'customer': lambda * a: 0,   # Do not compute account number if not necessary
+        'customer_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'customer', context=ctx),
+        'supplier_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'supplier', context=ctx),
     }
 
     #----------------------------------------------------------
     #   Private methods C&S
     #----------------------------------------------------------
+
     def _get_compute_account_number(self, cr, uid, partner, sequence):
         """Compute account code based on partner and sequence
 
@@ -219,7 +111,7 @@ class res_partner(osv.osv):
 
         return account_number
 
-    def _create_account_from_template(self, cr, uid, acc_value=None, acc_company=None, acc_tmpl=None, acc_parent=False, context=None):
+    def _create_account_from_template(self, cr, uid, acc_value=None, acc_tmpl=None, acc_parent=False, context=None):
         """
         Compose a new account the template define on the company
 
@@ -231,10 +123,9 @@ class res_partner(osv.osv):
         :rtype: dict
         """
         new_account = {
-            'name': acc_value.get('acc_name','Unknown'),
-            'code': acc_value.get('acc_number','CODE'),
+            'name': acc_value.get('acc_name', 'Unknown'),
+            'code': acc_value.get('acc_number', 'CODE'),
             'parent_id': acc_parent,
-            'company_id': acc_company,
             'user_type': acc_tmpl.user_type.id,
             'reconcile': True,
             'check_history': True,
@@ -245,7 +136,7 @@ class res_partner(osv.osv):
         }
         return new_account
 
-    def _get_acc_type_id(self, cr, uid, company_id, type=None, data=None, context=None):
+    def _get_acc_type_id(self, cr, uid, type=None, data=None, context=None):
         """
         Retrieve account id
         Returns account id or False
@@ -258,13 +149,12 @@ class res_partner(osv.osv):
 
         # Set args to select account type
         args = [
-            ('company_id', '=', company_id),
             ('partner_type', '=', type),
         ]
         if type == 'customer':
-            args.append(('code', '=', data.customer_type))
+            args.append(('id', '=', data.customer_type.id))
         elif type == 'supplier':
-            args.append(('code', '=', data.supplier_type))
+            args.append(('id', '=', data.supplier_type.id))
 
         # Retrieve account type id
         acc_type_obj = self.pool.get('account.generator.type')
@@ -277,8 +167,7 @@ class res_partner(osv.osv):
         # No ID found or more than one, return False (error)
         return False
 
-
-    def _create_new_account(self, cr, uid, company_id, type=None, data=None, context=None):
+    def _create_new_account(self, cr, uid, type=None, data=None, context=None):
         """
         Create the a new account base on a company configuration
 
@@ -295,7 +184,7 @@ class res_partner(osv.osv):
         if data is None:
             data = {}
 
-        type_id = self._get_acc_type_id(cr, uid, company_id, type, data, context=context)
+        type_id = self._get_acc_type_id(cr, uid, type, data, context=context)
         if type_id:
             acc_type_obj = self.pool.get('account.generator.type')
             gen = acc_type_obj.browse(cr, uid, type_id, context=context)
@@ -304,7 +193,7 @@ class res_partner(osv.osv):
                     'acc_name': data.name,
                     'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id),
                 }
-                new_acc = self._create_account_from_template(cr, uid, acc_value=gen_dict, acc_company=company_id,
+                new_acc = self._create_account_from_template(cr, uid, acc_value=gen_dict,
                                 acc_tmpl=gen.account_template_id, acc_parent=gen.account_parent_id.id, context=context)
                 return self.pool.get('account.account').create(cr, uid, new_acc, context=context)
             else:
@@ -338,9 +227,8 @@ class res_partner(osv.osv):
         if 'name' in vals:
             # Check if name is allowed to be modified
             for pnr in partners:
-                company_id = self._get_company_id(cr, uid, pnr, context=context)
                 if (pnr.customer or vals.get('customer', 0) == 1):
-                    acc_type_id = self._get_acc_type_id(cr, uid, company_id, 'customer', pnr, context=context)
+                    acc_type_id = self._get_acc_type_id(cr, uid, 'customer', pnr, context=context)
                     if acc_type_id:
                         locked = self.pool.get('account.generator.type').read(cr, uid, [acc_type_id], ['lock_partner_name'], context=context)
                         # Check if account type locks partner's name and if partner account has at leasr one move
@@ -351,7 +239,7 @@ class res_partner(osv.osv):
                                 raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
 
                 if (pnr.supplier or vals.get('supplier', 0) == 1):
-                    acc_type_id = self._get_acc_type_id(cr, uid, company_id, 'supplier', pnr, context=context)
+                    acc_type_id = self._get_acc_type_id(cr, uid, 'supplier', pnr, context=context)
                     if acc_type_id:
                         locked = self.pool.get('account.generator.type').read(cr, uid, [acc_type_id], ['lock_partner_name'], context=context)
                         # Check if account type locks partner's name and if partner account has at leasr one move
@@ -361,24 +249,23 @@ class res_partner(osv.osv):
                             and acc_move_line_obj.search(cr, uid, [('account_id', '=', pnr.property_account_payable.id)], context=context):
                                 raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
 
-        res= True
+        res = True
         if not context.get('skip_account_customer', False):
             for pnr in partners:
-                company_id = self._get_company_id(cr, uid, pnr, context=context)
                 ir_property_obj = self.pool.get('ir.property')
                 if (pnr.customer or vals.get('customer', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_receivable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
                         if ir_property.value_reference.id == pnr.property_account_receivable.id:
-                            vals['property_account_receivable'] = self._create_new_account(cr, uid, company_id, 'customer', pnr, context=context)
+                            vals['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', pnr, context=context)
 
                 if (pnr.supplier or vals.get('supplier', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_payable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
                         if ir_property.value_reference.id == pnr.property_account_payable.id:
-                            vals['property_account_payable'] = self._create_new_account(cr, uid, company_id, 'supplier', pnr, context=context)
+                            vals['property_account_payable'] = self._create_new_account(cr, uid, 'supplier', pnr, context=context)
 
                 if not super(res_partner, self).write(cr, uid, [pnr.id], vals, context=context):
                     res = False

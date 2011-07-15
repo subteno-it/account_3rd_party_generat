@@ -52,6 +52,7 @@
     'update_xml': [
         'security/ir.model.access.csv',
         'ir_sequence_data.xml',
+        'ir_rule_data.xml',
         'res_company_view.xml',
         'res_partner_view.xml',
         'wizard/install_wizard.xml',

@@ -34,10 +34,10 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='property_account_receivable']" position="after">
-                        <field name="customer_type"/>
+                        <field name="customer_type" widget="selection"/>
                     </xpath>
                     <xpath expr="//field[@name='property_account_payable']" position="after">
-                        <field name="supplier_type"/>
+                        <field name="supplier_type" widget="selection"/>
                     </xpath>
                 </data>
             </field>
