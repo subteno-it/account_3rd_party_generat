@@ -49,12 +49,13 @@ class res_partner(osv.osv):
         return type_ids[0]
 
     _columns = {
+        'customer': fields.property(None, method=True, string='Customer', type='boolean', help='Check this box if the partner is a customer.'),
+        'supplier': fields.property(None, method=True, string='Supplier', type='boolean', help='Check this box if the partner is a supplierer. If it\'s not checked, purchase people will not see it when encoding a purchase order.'),
         'customer_type': fields.many2one('account.generator.type', 'Customer type', domain=[('partner_type', '=', 'customer')], help='Customer account type'),
         'supplier_type': fields.many2one('account.generator.type', 'Supplier type', domain=[('partner_type', '=', 'supplier')], help='Supplier account type'),
     }
 
     _defaults = {
-        'customer': lambda * a: 0,   # Do not compute account number if not necessary
         'customer_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'customer', context=ctx),
         'supplier_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'supplier', context=ctx),
     }
