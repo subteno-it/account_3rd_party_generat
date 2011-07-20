@@ -64,7 +64,7 @@ class res_partner(osv.osv):
     #   Private methods C&S
     #----------------------------------------------------------
 
-    def _get_compute_account_number(self, cr, uid, partner, sequence):
+    def _get_compute_account_number(self, cr, uid, data, sequence, context=None):
         """Compute account code based on partner and sequence
 
         :param partner: current partner
@@ -83,6 +83,8 @@ class res_partner(osv.osv):
             body = seq_patern[len(prefix) + 1:][:len(seq_patern) - len(prefix) - len(suffix) - 2]
 
             ar_args = body.split('|')
+
+            partner = self.pool.get('res.partner').browse(cr, uid, data.get('id'), context=context)
 
             # partner field is always first
             partner_value = getattr(partner, ar_args[0])
@@ -153,9 +155,9 @@ class res_partner(osv.osv):
             ('partner_type', '=', type),
         ]
         if type == 'customer':
-            args.append(('id', '=', data.customer_type.id))
+            args.append(('id', '=', data.get('customer_type', False)))
         elif type == 'supplier':
-            args.append(('id', '=', data.supplier_type.id))
+            args.append(('id', '=', data.get('supplier_type', False)))
 
         # Retrieve account type id
         acc_type_obj = self.pool.get('account.generator.type')
@@ -191,8 +193,8 @@ class res_partner(osv.osv):
             gen = acc_type_obj.browse(cr, uid, type_id, context=context)
             if gen.ir_sequence_id:
                 gen_dict = {
-                    'acc_name': data.name,
-                    'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id),
+                    'acc_name': data.get('name'),
+                    'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id, context=context),
                 }
                 new_acc = self._create_account_from_template(cr, uid, acc_value=gen_dict,
                                 acc_tmpl=gen.account_template_id, acc_parent=gen.account_parent_id.id, context=context)
@@ -228,8 +230,12 @@ class res_partner(osv.osv):
         if 'name' in vals:
             # Check if name is allowed to be modified
             for pnr in partners:
+                data = {
+                    'customer_type': vals.get('customer_type', pnr.customer_type.id),
+                    'supplier_type': vals.get('supplier_type', pnr.supplier_type.id),
+                }
                 if (pnr.customer or vals.get('customer', 0) == 1):
-                    acc_type_id = self._get_acc_type_id(cr, uid, 'customer', pnr, context=context)
+                    acc_type_id = self._get_acc_type_id(cr, uid, 'customer', data, context=context)
                     if acc_type_id:
                         locked = self.pool.get('account.generator.type').read(cr, uid, [acc_type_id], ['lock_partner_name'], context=context)
                         # Check if account type locks partner's name and if partner account has at leasr one move
@@ -240,7 +246,7 @@ class res_partner(osv.osv):
                                 raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
 
                 if (pnr.supplier or vals.get('supplier', 0) == 1):
-                    acc_type_id = self._get_acc_type_id(cr, uid, 'supplier', pnr, context=context)
+                    acc_type_id = self._get_acc_type_id(cr, uid, 'supplier', data, context=context)
                     if acc_type_id:
                         locked = self.pool.get('account.generator.type').read(cr, uid, [acc_type_id], ['lock_partner_name'], context=context)
                         # Check if account type locks partner's name and if partner account has at leasr one move
@@ -253,20 +259,26 @@ class res_partner(osv.osv):
         res = True
         if not context.get('skip_account_customer', False):
             for pnr in partners:
+                data = {
+                    'id': pnr.id,
+                    'name': vals.get('name', pnr.name),
+                    'customer_type': vals.get('customer_type', pnr.customer_type.id),
+                    'supplier_type': vals.get('supplier_type', pnr.supplier_type.id),
+                }
                 ir_property_obj = self.pool.get('ir.property')
                 if (pnr.customer or vals.get('customer', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_receivable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
                         if ir_property.value_reference.id == pnr.property_account_receivable.id:
-                            vals['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', pnr, context=context)
+                            vals['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', data, context=context)
 
                 if (pnr.supplier or vals.get('supplier', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_payable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
                         if ir_property.value_reference.id == pnr.property_account_payable.id:
-                            vals['property_account_payable'] = self._create_new_account(cr, uid, 'supplier', pnr, context=context)
+                            vals['property_account_payable'] = self._create_new_account(cr, uid, 'supplier', data, context=context)
 
                 if not super(res_partner, self).write(cr, uid, [pnr.id], vals, context=context):
                     res = False
