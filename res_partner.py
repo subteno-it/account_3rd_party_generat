@@ -266,14 +266,14 @@ class res_partner(osv.osv):
                     'supplier_type': vals.get('supplier_type', pnr.supplier_type.id),
                 }
                 ir_property_obj = self.pool.get('ir.property')
-                if (pnr.customer or vals.get('customer', 0) == 1):
+                if (vals.get('customer', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_receivable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
                         if ir_property.value_reference.id == pnr.property_account_receivable.id:
                             vals['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', data, context=context)
 
-                if (pnr.supplier or vals.get('supplier', 0) == 1):
+                if (vals.get('supplier', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_payable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
