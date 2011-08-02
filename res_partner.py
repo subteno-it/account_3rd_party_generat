@@ -56,6 +56,7 @@ class res_partner(osv.osv):
     }
 
     _defaults = {
+        'customer': 0,
         'customer_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'customer', context=ctx),
         'supplier_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'supplier', context=ctx),
     }
