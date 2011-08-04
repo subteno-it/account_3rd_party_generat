@@ -3,7 +3,7 @@
     <data>
         ##############################################################################
         #
-        #    109_profile module for OpenERP, Profile for 109
+        #    account_3rd_party_generat module for OpenERP
         #    Copyright (C) 2011 SYLEAM Info Services ([http://www.Syleam.fr/]) 
         #              Sylvain Garancher [sylvain.garancher@syleam.fr]
         #
@@ -31,7 +31,7 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
             <field name="model_id" ref="account_3rd_party_generat.model_account_generator_type"/>
-            <field name="domain_force">['|','|',('company_id.child_ids','child_of',[user.company_id.id]),('company_id','child_of',[user.company_id.id]),('company_id','=',False)]</field>
+            <field name="domain_force">['|',('company_id','=',user.company_id.id),('company_id','=',False)]</field>
         </record>
 
     </data>
