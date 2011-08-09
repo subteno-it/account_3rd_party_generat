@@ -31,7 +31,7 @@
 
 {
     'name': 'Third parties account number generation',
-    'version': '1.1',
+    'version': '1.2',
     'author': 'SYLEAM Info Services',
     'website': 'http://www.syleam.fr',
     'category': 'Generic Modules/Accounting',
