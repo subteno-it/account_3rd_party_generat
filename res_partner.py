@@ -49,14 +49,12 @@ class res_partner(osv.osv):
         return type_ids[0]
 
     _columns = {
-        'customer': fields.property(None, method=True, string='Customer', type='boolean', help='Check this box if the partner is a customer.'),
-        'supplier': fields.property(None, method=True, string='Supplier', type='boolean', help='Check this box if the partner is a supplierer. If it\'s not checked, purchase people will not see it when encoding a purchase order.'),
         'customer_type': fields.property('account.generator.type', method=True, view_load=True, string='Customer type', type='many2one', relation='account.generator.type', domain=[('partner_type', '=', 'customer')], help='Customer account type'),
         'supplier_type': fields.property('account.generator.type', method=True, view_load=True, string='Supplier type', type='many2one', relation='account.generator.type', domain=[('partner_type', '=', 'supplier')], help='Supplier account type'),
     }
 
     _defaults = {
-        'customer': 0,
+        'customer': lambda * a: 0,
         'customer_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'customer', context=ctx),
         'supplier_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'supplier', context=ctx),
     }
@@ -273,14 +271,14 @@ class res_partner(osv.osv):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_receivable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
-                        if ir_property.value_reference.id == pnr.property_account_receivable.id:
+                        if int(ir_property.value.split(',')[1]) == pnr.property_account_receivable.id:
                             vals['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', data, context=context)
 
                 if ((pnr.supplier and context.get('force_create_account', False)) or vals.get('supplier', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('name', '=', 'property_account_payable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
-                        if ir_property.value_reference.id == pnr.property_account_payable.id:
+                        if int(ir_property.value.split(',')[1]) == pnr.property_account_payable.id:
                             vals['property_account_payable'] = self._create_new_account(cr, uid, 'supplier', data, context=context)
 
                 if not super(res_partner, self).write(cr, uid, [pnr.id], vals, context=context):
