@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.15\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
 "POT-Creation-Date: 2011-01-31 14:32:04+0000\n"
-"PO-Revision-Date: 2011-01-31 15:35+0100\n"
+"PO-Revision-Date: 2011-09-14 11:05+0100\n"
 "Last-Translator: Sylvain Garancher <sylvain.garancher@syleam.fr>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,12 +18,12 @@ msgstr ""
 #. module: account_3rd_party_generat
 #: help:account.generator.type,account_template_id:0
 msgid "Account use to create the new one"
-msgstr "Acompte utilisé pour créer le nouveau"
+msgstr "Compte utilisé comme modèle"
 
 #. module: account_3rd_party_generat
 #: constraint:ir.model:0
 msgid "The Object name must start with x_ and not contain any special character !"
-msgstr "Le nom de l'objet doit commencer avec x_ et ne pas contenir de charactères spéciaux !"
+msgstr "Le nom de l'objet doit commencer par x_ et ne doit pas contenir de caractère spécial !"
 
 #. module: account_3rd_party_generat
 #: view:wizard.install.third.part.accounts:0
@@ -33,7 +33,7 @@ msgstr "Numéro de compte"
 #. module: account_3rd_party_generat
 #: help:account.generator.type,code:0
 msgid "Code use to store value in the database"
-msgstr "Code use to store value in the database"
+msgstr "Code utilisé pour stocker la valeur dans la base de données"
 
 #. module: account_3rd_party_generat
 #: model:ir.actions.act_window,name:account_3rd_party_generat.action_third_part_account
@@ -59,12 +59,12 @@ msgstr "Configuration du générateur de compte, pour chaque type de partenaires
 #. module: account_3rd_party_generat
 #: constraint:ir.actions.act_window:0
 msgid "Invalid model name in the action definition."
-msgstr "Nom de modèle invalide pour l'action définit"
+msgstr "Nom de modèle invalide pour l'action définie"
 
 #. module: account_3rd_party_generat
 #: help:account.generator.type,field_select:0
 msgid "Select the field where the code be generate"
-msgstr "Select the field where the code be generate"
+msgstr "Sélectionnez le champ dans lequel le code sera généré"
 
 #. module: account_3rd_party_generat
 #: selection:account.generator.type,partner_type:0
@@ -75,7 +75,7 @@ msgstr "Fournisseur"
 #: code:addons/account_3rd_party_generat/object/partner.py:0
 #, python-format
 msgid "Too many default value define for %s type"
-msgstr "Trop de valeur par defaut définit pour le type %s"
+msgstr "Trop de valeurs par défaut définies pour le type %s"
 
 #. module: account_3rd_party_generat
 #: field:account.generator.type,partner_type:0
@@ -95,7 +95,7 @@ msgstr "code"
 #. module: account_3rd_party_generat
 #: field:account.generator.type,lock_partner_name:0
 msgid "Lock partner name"
-msgstr "Vérouille le nom du partenaire"
+msgstr "Verrouille le nom du partenaire"
 
 #. module: account_3rd_party_generat
 #: field:wizard.install.third.part.accounts,payable_id:0
@@ -106,12 +106,12 @@ msgstr "Compte fournisseur"
 #: code:addons/account_3rd_party_generat/object/company.py:0
 #, python-format
 msgid "Error in process, contact your administrator!"
-msgstr "Erreur de traitement, contacter votre administrateur!"
+msgstr "Erreur de traitement, contacter votre administrateur !"
 
 #. module: account_3rd_party_generat
 #: help:account.generator.type,default_value:0
 msgid "Default value for this type"
-msgstr "Valeur de défaut pour ce type"
+msgstr "Valeur par défaut pour ce type"
 
 #. module: account_3rd_party_generat
 #: view:wizard.install.third.part.accounts:0
@@ -152,7 +152,7 @@ msgstr "ref"
 #. module: account_3rd_party_generat
 #: help:account.generator.type,company_id:0
 msgid "Company where this configuration is apply"
-msgstr "Société ou la configuration est appliqué"
+msgstr "Société pour laquelle la configuration est appliquée"
 
 #. module: account_3rd_party_generat
 #: selection:account.generator.type,partner_type:0
@@ -177,7 +177,7 @@ msgstr "Nom"
 #. module: account_3rd_party_generat
 #: field:account.generator.type,account_reference_id:0
 msgid "Account reference"
-msgstr "Account reference"
+msgstr "Compte de référence"
 
 #. module: account_3rd_party_generat
 #: field:res.company,account_generator_type_ids:0
@@ -187,12 +187,12 @@ msgstr "Type de générateur de compte"
 #. module: account_3rd_party_generat
 #: help:account.generator.type,account_parent_id:0
 msgid "Select the parent account of the new account generate"
-msgstr "Sélectionner le compte parent pour le nouveau compte généré"
+msgstr "Sélectionner le compte parent des nouveaux comptes générés"
 
 #. module: account_3rd_party_generat
 #: help:account.generator.type,account_reference_id:0
 msgid "If no sequence define, this account reference is choose all the time"
-msgstr "If no sequence define, this account reference is choose all the time"
+msgstr "Si aucune séquence n'est définie, ce compte sera choisi à chaque fois"
 
 #. module: account_3rd_party_generat
 #: view:account.generator.type:0
@@ -208,7 +208,7 @@ msgstr "Modèle de compte"
 #. module: account_3rd_party_generat
 #: view:account.generator.type:0
 msgid "Reference template (no treatment)"
-msgstr "Reference template (no treatment)"
+msgstr "Modèle de référence (aucun traitement)"
 
 #. module: account_3rd_party_generat
 #: code:addons/account_3rd_party_generat/object/company.py:0
@@ -220,17 +220,17 @@ msgstr "Erreur"
 #. module: account_3rd_party_generat
 #: field:account.generator.type,default_value:0
 msgid "Default value"
-msgstr "Valeur pas défaut"
+msgstr "Valeur par défaut"
 
 #. module: account_3rd_party_generat
 #: field:account.generator.type,code_pre:0
 msgid "Code Prefix"
-msgstr "Code Prefix"
+msgstr "Préfixe du code"
 
 #. module: account_3rd_party_generat
 #: help:account.generator.type,ir_sequence_id:0
 msgid "Sequence use to generate the code"
-msgstr "Séquence utilisée pour générer le compte comptable"
+msgstr "Séquence utilisée pour générer le code"
 
 #. module: account_3rd_party_generat
 #: field:res.partner,supplier_type:0
@@ -240,7 +240,7 @@ msgstr "Type de fournisseur"
 #. module: account_3rd_party_generat
 #: field:account.generator.type,field_select:0
 msgid "Select Field"
-msgstr "Select Field"
+msgstr "Choix du champ"
 
 #. module: account_3rd_party_generat
 #: model:ir.module.module,description:account_3rd_party_generat.module_meta_information
@@ -302,7 +302,7 @@ msgstr "Vous ne pouvez modifier le nom du partenaire, son compte a des écriture
 #. module: account_3rd_party_generat
 #: field:account.generator.type,code_suf:0
 msgid "Code Suffix"
-msgstr "Code Suffix"
+msgstr "Suffixe du code"
 
 #. module: account_3rd_party_generat
 #: view:wizard.install.third.part.accounts:0
@@ -317,5 +317,5 @@ msgstr "Compte client"
 #. module: account_3rd_party_generat
 #: view:account.generator.type:0
 msgid "Generate template (with treatment)"
-msgstr "Generate template (with treatment)"
+msgstr "Modèle de génération (avec des traitements)"
 
