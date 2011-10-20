@@ -90,6 +90,18 @@ class AccountGeneratorType(osv.osv):
 
         return {'value': {}, 'domain': domain}
 
+    def name_search(self, cr, uid, name, args=None, operator='ilike', context=None, limit=80):
+        "name search can also find by code"
+        if args is None:
+            args=[]
+        ids = []
+        if name:
+            ids = self.search(cr, uid, [('code','ilike',name)]+ args, limit=limit, context=context)
+        if not ids:
+            return super(AccountGeneratorType, self).name_search(cr, uid, name, args=args, operator=operator, context=context, limit=limit)
+        return self.name_get(cr, uid, ids, context=context)
+
+
 AccountGeneratorType()
 
 
