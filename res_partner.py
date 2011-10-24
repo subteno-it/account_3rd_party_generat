@@ -49,8 +49,8 @@ class res_partner(osv.osv):
         return type_ids[0]
 
     _columns = {
-        'customer_type': fields.property('account.generator.type', method=True, view_load=True, string='Customer type', type='many2one', relation='account.generator.type', domain=[('partner_type', '=', 'customer')], help='Customer account type'),
-        'supplier_type': fields.property('account.generator.type', method=True, view_load=True, string='Supplier type', type='many2one', relation='account.generator.type', domain=[('partner_type', '=', 'supplier')], help='Supplier account type'),
+        'customer_type': fields.many2one('account.generator.type', 'Customer type', domain=[('partner_type', '=', 'customer')], help='Customer account type'),
+        'supplier_type': fields.many2one('account.generator.type', 'Supplier type', domain=[('partner_type', '=', 'supplier')], help='Supplier account type'),
     }
 
     _defaults = {
