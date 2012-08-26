@@ -109,7 +109,7 @@ class res_partner(osv.osv):
                 self.pool.get('ir.sequence').write(cr, uid, [sequence.id], {'number_next': sequence.number_next + sequence.number_increment})
         else:
             seq_obj = self.pool.get('ir.sequence')
-            account_number = seq_obj.get_id(cr, uid, sequence.id)
+            account_number = seq_obj.next_by_id(cr, uid, sequence.id, context=context)
 
         return account_number
 
