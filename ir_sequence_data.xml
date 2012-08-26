@@ -16,7 +16,7 @@
         <record model="ir.sequence" id="seq_supplier_account">
             <field name="name">Supplier account</field>
             <field name="code">account.partner.third_part</field>
-            <field name="prefix">401#</field>
+            <field name="prefix">401</field>
             <field name="number_next" eval="1"/>
             <field name="number_increment" eval="1"/>
             <field name="padding" eval="6"/>
@@ -25,7 +25,7 @@
         <record model="ir.sequence" id="seq_customer_account">
             <field name="name">Customer account</field>
             <field name="code">account.partner.third_part</field>
-            <field name="prefix">411#</field>
+            <field name="prefix">411</field>
             <field name="number_next" eval="1"/>
             <field name="number_increment" eval="1"/>
             <field name="padding" eval="6"/>
