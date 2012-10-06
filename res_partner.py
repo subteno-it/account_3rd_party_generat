@@ -33,8 +33,6 @@ class res_partner(osv.osv):
         """
         Search the default context
         """
-        if context is None:
-            context = {}
         args = [
             ('partner_type', '=', field),
             ('default_value', '=', True),
@@ -45,18 +43,21 @@ class res_partner(osv.osv):
             return False
         elif len(type_ids) > 1:
             raise osv.except_osv(_('Error'), _('Too many default values defined for %s type') % _(field))
-
         return type_ids[0]
 
     _columns = {
         'customer_type': fields.property('account.generator.type', method=True, view_load=True, string='Customer type', type='many2one', relation='account.generator.type', domain=[('partner_type', '=', 'customer')], help='Customer account type'),
         'supplier_type': fields.property('account.generator.type', method=True, view_load=True, string='Supplier type', type='many2one', relation='account.generator.type', domain=[('partner_type', '=', 'supplier')], help='Supplier account type'),
+        'force_create_customer_account': fields.boolean('Force create account', help='If set, OpenERP will generate a new acount for this customer'),
+        'force_create_supplier_account': fields.boolean('Force create account', help='If set, OpenERP will generate a new acount for this supplier'),
     }
 
     _defaults = {
         'customer': 0,
         'customer_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'customer', context=ctx),
         'supplier_type': lambda self, cr, uid, ctx: self._partner_default_value(cr, uid, 'supplier', context=ctx),
+        'force_create_customer_account': 0,
+        'force_create_supplier_account': 0,
     }
 
     #----------------------------------------------------------
@@ -75,19 +76,14 @@ class res_partner(osv.osv):
         :rtype: str
         """
         seq_patern = sequence.prefix
-
         if seq_patern.find('{') >= 0:
             prefix = seq_patern[:seq_patern.index('{')]
             suffix = seq_patern[seq_patern.index('}') + 1:]
             body = seq_patern[len(prefix) + 1:][:len(seq_patern) - len(prefix) - len(suffix) - 2]
-
             ar_args = body.split('|')
-
             partner = self.pool.get('res.partner').browse(cr, uid, data.get('id'), context=context)
-
             # partner field is always first
             partner_value = getattr(partner, ar_args[0])
-
             if partner_value:
                 # Modificators
                 mdf = Modificator(partner_value)
@@ -104,13 +100,11 @@ class res_partner(osv.osv):
                 # verify if root of this number is existing
                 next_inc = ("%d" % sequence.number_next).zfill(nzf)
                 account_number = account_number.replace('#', next_inc)
-
                 # Increments sequence number
                 self.pool.get('ir.sequence').write(cr, uid, [sequence.id], {'number_next': sequence.number_next + sequence.number_increment})
         else:
             seq_obj = self.pool.get('ir.sequence')
             account_number = seq_obj.next_by_id(cr, uid, sequence.id, context=context)
-
         return account_number
 
     def _create_account_from_template(self, cr, uid, acc_value=None, acc_tmpl=None, acc_parent=False, context=None):
@@ -130,7 +124,6 @@ class res_partner(osv.osv):
             'parent_id': acc_parent,
             'user_type': acc_tmpl.user_type.id,
             'reconcile': True,
-            'check_history': True,
             'currency_id': acc_tmpl.currency_id and acc_tmpl.currency_id.id or False,
             'active': True,
             'type': acc_tmpl.type,
@@ -143,29 +136,20 @@ class res_partner(osv.osv):
         Retrieve account id
         Returns account id or False
         """
-        if context is None:
-            context = {}
-
         if data is None:
             data = {}
-
         # Set args to select account type
-        args = [
-            ('partner_type', '=', type),
-        ]
+        args = [('partner_type', '=', type),]
         if type == 'customer':
             args.append(('id', '=', data.get('customer_type', False)))
         elif type == 'supplier':
             args.append(('id', '=', data.get('supplier_type', False)))
-
         # Retrieve account type id
         acc_type_obj = self.pool.get('account.generator.type')
         type_ids = acc_type_obj.search(cr, uid, args, context=context)
-
         # If only one ID is found, return it
         if type_ids and len(type_ids) == 1:
             return type_ids[0]
-
         # No ID found or more than one, return False (error)
         return False
 
@@ -180,12 +164,8 @@ class res_partner(osv.osv):
         :return: the id of the new account
         :rtype: integer
         """
-        if context is None:
-            context = {}
-
         if data is None:
             data = {}
-
         type_id = self._get_acc_type_id(cr, uid, type, data, context=context)
         if type_id:
             acc_type_obj = self.pool.get('account.generator.type')
@@ -195,8 +175,13 @@ class res_partner(osv.osv):
                     'acc_name': data.get('name'),
                     'acc_number': self._get_compute_account_number(cr, uid, data, gen.ir_sequence_id, context=context),
                 }
-                new_acc = self._create_account_from_template(cr, uid, acc_value=gen_dict,
-                                acc_tmpl=gen.account_template_id, acc_parent=gen.account_parent_id.id, context=context)
+                new_acc = self._create_account_from_template(
+                    cr, uid,
+                    acc_value=gen_dict,
+                    acc_tmpl=gen.account_template_id,
+                    acc_parent=gen.account_parent_id.id,
+                    context=context
+                )
                 return self.pool.get('account.account').create(cr, uid, new_acc, context=context)
             else:
                 return gen.account_reference_id and gen.account_reference_id.id or False
@@ -211,21 +196,23 @@ class res_partner(osv.osv):
             context = {}
 
         res = super(res_partner, self).create(cr, uid, data, context)
-        ctx = context.copy()
-        ctx['force_create_account'] = True
+        ctx = dict(context, force_create_customer_account=True, force_create_supplier_account=True)
         self.write(cr, uid, [res], {}, context=ctx)
         return res
 
     def write(self, cr, uid, ids, vals=None, context=None):
         if context is None:
             context = {}
-
         if vals is None:
             vals = {}
-
         if not isinstance(ids, list):
             ids = [ids]
-
+        if vals.get('force_create_customer_account', False) and vals['force_create_customer_account']:
+            context = dict(context, force_create_customer_account=True)
+            del vals['force_create_customer_account']
+        if vals.get('force_create_supplier_account', False) and vals['force_create_supplier_account']:
+            context = dict(context, force_create_supplier_account=True)
+            del vals['force_create_supplier_account']
         partners = self.browse(cr, uid, ids, context=context)
         acc_move_line_obj = self.pool.get('account.move.line')
         if 'name' in vals:
@@ -245,7 +232,6 @@ class res_partner(osv.osv):
                             and locked[0]['lock_partner_name'] \
                             and acc_move_line_obj.search(cr, uid, [('account_id', '=', pnr.property_account_receivable.id)], context=context):
                                 raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
-
                 if (pnr.supplier or vals.get('supplier', 0) == 1):
                     acc_type_id = self._get_acc_type_id(cr, uid, 'supplier', data, context=context)
                     if acc_type_id:
@@ -256,7 +242,6 @@ class res_partner(osv.osv):
                             and locked[0]['lock_partner_name'] \
                             and acc_move_line_obj.search(cr, uid, [('account_id', '=', pnr.property_account_payable.id)], context=context):
                                 raise osv.except_osv(_('Error'), _('You cannot change partner\'s name when his account has moves'))
-
         res = True
         if not context.get('skip_account_customer', False):
             for pnr in partners:
@@ -267,24 +252,22 @@ class res_partner(osv.osv):
                     'supplier_type': vals.get('supplier_type', pnr.supplier_type.id),
                 }
                 ir_property_obj = self.pool.get('ir.property')
-                if ((pnr.customer and context.get('force_create_account', False)) or vals.get('customer', 0) == 1):
+                if ((pnr.customer and context.get('force_create_customer_account', False)) or vals.get('customer', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('fields_id.name', '=', 'property_account_receivable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
                         if ir_property.value_reference.id == pnr.property_account_receivable.id:
                             vals['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', data, context=context)
-
-                if ((pnr.supplier and context.get('force_create_account', False)) or vals.get('supplier', 0) == 1):
+                if ((pnr.supplier and context.get('force_create_supplier_account', False)) or vals.get('supplier', 0) == 1):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('fields_id.name', '=', 'property_account_payable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
                         if ir_property.value_reference.id == pnr.property_account_payable.id:
                             vals['property_account_payable'] = self._create_new_account(cr, uid, 'supplier', data, context=context)
-
                 if not super(res_partner, self).write(cr, uid, [pnr.id], vals, context=context):
                     res = False
-
-        return res
+            return res
+        return super(res_partner, self).write(cr, uid, ids, vals, context=context)
 
 res_partner()
 
