@@ -194,19 +194,6 @@ class res_partner(osv.osv):
                 return gen.account_reference_id and gen.account_reference_id.id or False
         return False
 
-    def create(self, cr, uid, data, context=None):
-        """
-        When create a customer and supplier, we create the account code
-        and affect it to this partner
-        """
-        if context is None:
-            context = {}
-
-        res = super(res_partner, self).create(cr, uid, data, context)
-        ctx = dict(context, force_create_customer_account=True, force_create_supplier_account=True)
-        self.write(cr, uid, [res], {}, context=ctx)
-        return res
-
     def write(self, cr, uid, ids, vals=None, context=None):
         if context is None:
             context = {}
@@ -259,13 +246,13 @@ class res_partner(osv.osv):
                     'supplier_type': vals.get('supplier_type', pnr.supplier_type.id),
                 }
                 ir_property_obj = self.pool.get('ir.property')
-                if ((pnr.customer and context.get('force_create_customer_account', False)) or vals.get('customer', 0) == 1):
+                if ((pnr.customer or vals.get('customer', 0) == 1) and context.get('force_create_customer_account', False)):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('fields_id.name', '=', 'property_account_receivable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
                         if ir_property.value_reference.id == pnr.property_account_receivable.id:
                             vals['property_account_receivable'] = self._create_new_account(cr, uid, 'customer', data, context=context)
-                if ((pnr.supplier and context.get('force_create_supplier_account', False)) or vals.get('supplier', 0) == 1):
+                if ((pnr.supplier or vals.get('supplier', 0) == 1) and context.get('force_create_supplier_account', False)):
                     ir_property_ids = ir_property_obj.search(cr, uid, [('fields_id.name', '=', 'property_account_payable'), ('res_id', '=', False)], offset=0, limit=1, order=None, context=context)
                     if ir_property_ids:
                         ir_property = ir_property_obj.browse(cr, uid, ir_property_ids[0], context=context)
