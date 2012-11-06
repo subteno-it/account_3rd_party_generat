@@ -35,11 +35,11 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='property_account_receivable']" position="after">
-                        <field name="customer_type" widget="selection" attrs="{'required': [('customer','=', 1)]}"/>
+                        <field name="customer_type" widget="selection" attrs="{'required': [('force_create_customer_account','=', 1)]}"/>
                         <field name="force_create_customer_account" attrs="{'invisible': [('customer','=', 0)]}"/>
                     </xpath>
                     <xpath expr="//field[@name='property_account_payable']" position="after">
-                        <field name="supplier_type" widget="selection" attrs="{'required': [('supplier','=', 1)]}"/>
+                        <field name="supplier_type" widget="selection" attrs="{'required': [('force_create_supplier_account','=', 1)]}"/>
                         <field name="force_create_supplier_account" attrs="{'invisible': [('supplier','=', 0)]}"/>
                     </xpath>
                 </data>
