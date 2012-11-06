@@ -33,9 +33,11 @@ class res_partner(osv.osv):
         """
         Search the default context
         """
+        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
         args = [
             ('partner_type', '=', field),
             ('default_value', '=', True),
+            ('company_id', '=', user.company_id.id),
         ]
         acc_type_obj = self.pool.get('account.generator.type')
         type_ids = acc_type_obj.search(cr, uid, args, context=context)
