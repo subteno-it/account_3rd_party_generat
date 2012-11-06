@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenERP Server 5.0.15\n"
-"Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2011-01-31 14:31:16+0000\n"
-"PO-Revision-Date: 2011-01-31 14:31:16+0000\n"
+"Project-Id-Version: OpenERP Server 6.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-16 21:08+0000\n"
+"PO-Revision-Date: 2012-10-16 21:08+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,13 +21,13 @@ msgid "Account use to create the new one"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: constraint:ir.model:0
-msgid "The Object name must start with x_ and not contain any special character !"
+#: view:wizard.install.third.part.accounts:0
+msgid "Account number"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: view:wizard.install.third.part.accounts:0
-msgid "Account number"
+#: help:account.generator.type,name:0
+msgid "Name appear on the partner form"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -57,11 +57,6 @@ msgid "Configure the account generator, for each type of partner"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: constraint:ir.actions.act_window:0
-msgid "Invalid model name in the action definition."
-msgstr ""
-
-#. module: account_3rd_party_generat
 #: help:account.generator.type,field_select:0
 msgid "Select the field where the code be generate"
 msgstr ""
@@ -72,19 +67,14 @@ msgid "Supplier"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: code:addons/account_3rd_party_generat/object/partner.py:0
-#, python-format
-msgid "Too many default value define for %s type"
-msgstr ""
-
-#. module: account_3rd_party_generat
 #: field:account.generator.type,partner_type:0
 msgid "Type"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: model:ir.module.module,shortdesc:account_3rd_party_generat.module_meta_information
-msgid "third parties account number generation"
+#: field:res.partner,force_create_customer_account:0
+#: field:res.partner,force_create_supplier_account:0
+msgid "Force create account"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -98,14 +88,18 @@ msgid "Lock partner name"
 msgstr ""
 
 #. module: account_3rd_party_generat
+#: constraint:res.company:0
+msgid "Error! You can not create recursive companies."
+msgstr ""
+
+#. module: account_3rd_party_generat
 #: field:wizard.install.third.part.accounts,payable_id:0
 msgid "Account payable"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: code:addons/account_3rd_party_generat/object/company.py:0
-#, python-format
-msgid "Error in process, contact your administrator!"
+#: field:res.partner,supplier_type:0
+msgid "Supplier type"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -140,8 +134,18 @@ msgid "Select the type of partner"
 msgstr ""
 
 #. module: account_3rd_party_generat
+#: constraint:res.company:0
+msgid "Error msg is in raise"
+msgstr ""
+
+#. module: account_3rd_party_generat
 #: model:ir.model,name:account_3rd_party_generat.model_wizard_install_third_part_accounts
 msgid "wizard.install.third.part.accounts"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: constraint:res.company:0
+msgid "The 'SIRET complement' should have exactly 5 digits."
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -160,13 +164,13 @@ msgid "Customer"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: help:account.generator.type,name:0
-msgid "Name appear on the partner form"
+#: help:res.partner,force_create_customer_account:0
+msgid "If set, OpenERP will generate a new acount for this customer"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: constraint:ir.ui.view:0
-msgid "Invalid XML for View Architecture!"
+#: sql_constraint:res.company:0
+msgid "The company name must be unique !"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -182,6 +186,11 @@ msgstr ""
 #. module: account_3rd_party_generat
 #: field:res.company,account_generator_type_ids:0
 msgid "Account generator type"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: model:ir.model,name:account_3rd_party_generat.model_res_company
+msgid "Companies"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -206,15 +215,13 @@ msgid "Account template"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: view:account.generator.type:0
-msgid "Reference template (no treatment)"
+#: help:res.partner,supplier_type:0
+msgid "Supplier account type"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: code:addons/account_3rd_party_generat/object/company.py:0
-#: code:addons/account_3rd_party_generat/object/partner.py:0
-#, python-format
-msgid "Error"
+#: view:account.generator.type:0
+msgid "Reference template (no treatment)"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -233,32 +240,8 @@ msgid "Sequence use to generate the code"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: field:res.partner,supplier_type:0
-msgid "Supplier type"
-msgstr ""
-
-#. module: account_3rd_party_generat
 #: field:account.generator.type,field_select:0
 msgid "Select Field"
-msgstr ""
-
-#. module: account_3rd_party_generat
-#: model:ir.module.module,description:account_3rd_party_generat.module_meta_information
-msgid ".\n"
-"    This module is automaticaly create account number in chat of account according to the partner.\n"
-"    If partner is customer it generate third party account and associate this new accoun to partner.\n"
-"    The same is also done for suppliers.\n"
-"\n"
-"    Credit :\n"
-"        EverLibre, Zeekom, Syleam\n"
-"\n"
-"\n"
-"    ------\n"
-"    OpenERP Version >= 5.0.7\n"
-"    ------\n"
-"    Last-update : 2011-01-09\n"
-"\n"
-"    Date Start : 2010-05-27"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -273,14 +256,18 @@ msgid "Sequence"
 msgstr ""
 
 #. module: account_3rd_party_generat
+#: help:res.partner,force_create_supplier_account:0
+msgid "If set, OpenERP will generate a new acount for this supplier"
+msgstr ""
+
+#. module: account_3rd_party_generat
 #: help:account.generator.type,lock_partner_name:0
 msgid "Partner's name is locked when his account has at least one account move"
 msgstr ""
 
 #. module: account_3rd_party_generat
-#: code:addons/account_3rd_party_generat/object/partner.py:0
-#, python-format
-msgid "You cannot change partner\'s name when his account has moves"
+#: constraint:res.partner:0
+msgid "Error msg in raise"
 msgstr ""
 
 #. module: account_3rd_party_generat
@@ -294,6 +281,11 @@ msgid "Cancel"
 msgstr ""
 
 #. module: account_3rd_party_generat
+#: model:ir.model,name:account_3rd_party_generat.model_res_partner
+msgid "Partner"
+msgstr ""
+
+#. module: account_3rd_party_generat
 #: field:wizard.install.third.part.accounts,receivable_id:0
 msgid "Account receivable"
 msgstr ""
@@ -301,5 +293,10 @@ msgstr ""
 #. module: account_3rd_party_generat
 #: view:account.generator.type:0
 msgid "Generate template (with treatment)"
+msgstr ""
+
+#. module: account_3rd_party_generat
+#: help:res.partner,customer_type:0
+msgid "Customer account type"
 msgstr ""
 

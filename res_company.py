@@ -50,12 +50,12 @@ class AccountGeneratorType(osv.osv):
     }
 
     _defaults = {
-        'partner_type': lambda *a: False,
-        'default_value': lambda *a: False,
-        'ir_sequence_id': lambda *a: False,
-        'account_template_id': lambda *a: False,
-        'account_parent_id': lambda *a: False,
-        'field_select': lambda *a: 'none',
+        'partner_type': False,
+        'default_value': False,
+        'ir_sequence_id': False,
+        'account_template_id': False,
+        'account_parent_id': False,
+        'field_select': 'none',
     }
 
     def onchange_partner_type(self, cr, uid, ids, partner_type=None, context=None):
@@ -64,9 +64,6 @@ class AccountGeneratorType(osv.osv):
         - account_template_id
         - account_parent_id
         """
-        if context is None:
-            context = {}
-
         if partner_type is None or partner_type == False:
             domain = {
                 'account_template_id': [('id', '=', 0)],
@@ -87,7 +84,6 @@ class AccountGeneratorType(osv.osv):
             }
         else:
             raise osv.except_osv(_('Error'), _('Error in process, contact your administrator!'))
-
         return {'value': {}, 'domain': domain}
 
 AccountGeneratorType()
