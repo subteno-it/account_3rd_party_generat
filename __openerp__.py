@@ -30,7 +30,7 @@
 ##############################################################################
 
 {
-    'name': 'Third parties account number generation',
+    'name': 'Third parties account number generator',
     'version': '1.2',
     'author': 'SYLEAM Info Services',
     'website': 'http://www.syleam.fr',
