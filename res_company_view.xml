@@ -90,7 +90,7 @@
                 <xpath expr="/form/sheet/notebook" position="inside">
                     <page string="Account generator">
                         <separator string="Configure the account generator, for each type of partner" colspan="4"/>
-                        <field name="account_generator_type_ids" mode="tree,form" nolabel="1" colspan="4"/>
+                        <field name="account_generator_type_ids" nolabel="1" colspan="4"/>
                     </page>
                 </xpath>
 
