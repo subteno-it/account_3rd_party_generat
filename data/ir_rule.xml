@@ -33,6 +33,5 @@
             <field name="model_id" ref="account_3rd_party_generat.model_account_generator_type"/>
             <field name="domain_force">['|',('company_id','=',user.company_id.id),('company_id','=',False)]</field>
         </record>
-
     </data>
 </openerp>

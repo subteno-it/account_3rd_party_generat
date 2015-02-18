@@ -20,101 +20,58 @@
 #
 ##############################################################################
 
-from osv import osv
-from osv import fields
-import types
+from openerp import models, api, fields
 
 
-class wizard_install_third_part_accounts(osv.osv_memory):
-    """
-    """
+class wizard_install_third_part_accounts(models.TransientModel):
     _name = 'wizard.install.third.part.accounts'
 
-    _columns = {
-        'company_id': fields.many2one('res.company', 'Company', required=True),
-        'receivable_id': fields.many2one('account.account', 'Account receivable', domain="[('type', '=', 'view')]", required=True),
-        'payable_id': fields.many2one('account.account', 'Account payable', domain="[('type', '=', 'view')]", required=True),
-    }
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id.id)
+    receivable_id = fields.Many2one('account.account', string='Account receivable', domain=[('type', '=', 'view')], required=True, default=lambda self: self._default_account_id('receivable'))
+    payable_id = fields.Many2one('account.account', string='Account payable', domain=[('type', '=', 'view')], required=True, default=lambda self: self._default_account_id('payable'))
 
-    def _default_account_id(self, cr, uid, account_type, context=None):
-        if context is None:
-            context = {}
-        account_type_id = self.pool.get('account.account.type').search(cr, uid, [('code', '=', account_type)], context=context)
-        srch_args = [('type', '=', 'view'), ('user_type', 'in', account_type_id)]
-        account_id = self.pool.get('account.account').search(cr, uid, srch_args, context=context)
+    @api.model
+    def _default_account_id(self, account_type):
+        account_type_id = self.env['account.account.type'].search([('code', '=', account_type)])
+        account_id = self.env['account.account'].search([('type', '=', 'view'), ('user_type', 'in', account_type_id)])
         if account_id:
-            if type(account_id) is types.IntType:
-                return account_id
-            elif type(account_id) is types.ListType:
-                return account_id[0]
+            return account_id.id
         return False
 
-    def _default_receivable_id(self, cr, uid, context=None):
-        if context is None:
-            context = {}
-        return self._default_account_id(cr, uid, 'receivable', context=context)
-
-    def _default_payable_id(self, cr, uid, context=None):
-        if context is None:
-            context = {}
-        return self._default_account_id(cr, uid, 'payable', context=context)
-
-    _defaults = {
-        'company_id': lambda self, cr, uid, c: self.pool.get('res.users').browse(cr, uid, [uid], c)[0].company_id.id,
-        'receivable_id': _default_receivable_id,
-        'payable_id': _default_payable_id,
-    }
-
-    def _set_property(self, cr, uid, prop_name, prop_account_id, company_id):
+    @api.model
+    def _set_property(self, field_name, account, company):
         """
         Set/Reset default properties
         """
-        property_obj = self.pool.get('ir.property')
-        prp_ids = property_obj.search(cr, uid, [('name', '=', prop_name), ('company_id', '=', company_id)])
-        # FIXME Add critéria to find only 1 record
-        if prp_ids:
-            if len(prp_ids) == 1:  # the property exist: modify it
-                vals = {
-                    'value': prop_account_id and 'account.account,' + str(prop_account_id) or False,
-                }
-                out_id = prp_ids[0]
-                property_obj.write(cr, uid, [out_id], vals)
-            else:
-                #FIXME Over write the nly record that have res = NULL
-                out_id = False
-                pass    # DO NOTHING / DO NOT CHANGE EXISTING DATAS
-        else:  # create the property
-            fields_obj = self.pool.get('ir.model.fields')
-            field_ids = fields_obj.search(cr, uid, [('name', '=', prop_name), ('model', '=', 'res.partner'), ('relation', '=', 'account.account')])
-            vals = {
-                'name': prop_name,
-                'company_id': company_id,
-                'fields_id': field_ids[0],
-                'value': prop_account_id and 'account.account,' + str(prop_account_id) or False,
-            }
-            out_id = property_obj.create(cr, uid, vals)
-        return out_id
+        property_obj = self.env['ir.property']
+        field = self.env['ir.model.fields'].search([('name', '=', field_name), ('model', '=', 'res.partner')])
+        value = account and 'account.account,' + str(account.id) or False
 
-    def action_start_install(self, cr, uid, ids, context=None):
+        properties = property_obj.search([('field_id', '=', field.id), ('res_id', '=', False), ('company_id', '=', company.id)])
+        if properties:
+            properties.write({'value': value})
+        else:
+            property_obj.create({
+                'name': field_name,
+                'company_id': company.id,
+                'fields_id': field.id,
+                'value': value,
+            })
+
+    @api.multi
+    def action_start_install(self):
         """
         Create the properties : specify default account (payable and receivable) for partners
         """
-        wiz_data = self.browse(cr, uid, ids[0])
-        self._set_property(cr, uid, 'property_account_receivable', wiz_data.receivable_id and wiz_data.receivable_id.id, wiz_data.company_id and wiz_data.company_id.id)
-        self._set_property(cr, uid, 'property_account_payable', wiz_data.payable_id and wiz_data.payable_id.id, wiz_data.company_id and wiz_data.company_id.id)
+        self._set_property('property_account_receivable', self.receivable_id, self.company_id)
+        self._set_property('property_account_payable', self.payable_id, self.company_id)
 
-        next_action = {
+        return {
             'type': 'ir.actions.act_window',
             'res_model': 'ir.actions.configuration.wizard',
             'view_type': 'form',
             'view_mode': 'form',
             'target': 'new',
         }
-        return next_action
-
-    def action_cancel(self, cr, uid, ids, conect=None):
-        return {'type': 'ir.actions.act_window_close'}
-
-wizard_install_third_part_accounts()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

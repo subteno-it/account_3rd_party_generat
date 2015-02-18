@@ -48,13 +48,11 @@
         'account',
         'account_chart',
     ],
-    'init_xml': [],
-    'update_xml': [
+    'data': [
         'security/ir.model.access.csv',
-        'ir_sequence_data.xml',
-        'ir_rule_data.xml',
-        'res_company_view.xml',
-        'res_partner_view.xml',
+        'data/ir_sequence.xml',
+        'data/ir_rule.xml',
+        'views/base.xml',
         'wizard/install_wizard.xml',
     ],
     'demo_xml': [],

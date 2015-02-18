@@ -34,9 +34,11 @@ import string
 
 
 class Modificator(object):
+
     """
     TODO: describe this
     """
+
     def __init__(self, strVal):
         self.strVal = strVal
 
@@ -56,7 +58,7 @@ class Modificator(object):
         return newval
 
     def rmaccent(self):
-        #see also : from string import maketrans || string.translate
+        # see also : from string import maketrans || string.translate
         newval = self.strVal.encode('utf-8')
         oldchar = "àäâéèëêïîöôüûùÿÄÂËÊÏÎÖÔÜÛ".decode('utf-8')
         newchar = "aaaeeeeiioouuuyAAEEIIOOUU"
