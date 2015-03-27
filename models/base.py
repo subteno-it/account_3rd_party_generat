@@ -262,7 +262,7 @@ class ResPartner(models.Model):
 
             if partner.customer and partner.customer_type and partner.force_create_customer_account:
                 # Create a new account only if the partner is using the default account
-                ir_properties = ir_property_obj.search([('fields_id', '=', customer_field.id), ('res_id', '=', False)])
+                ir_properties = ir_property_obj.search([('company_id', '=', self.env.user.company_id.id), ('fields_id', '=', customer_field.id), ('res_id', '=', False)])
                 if ir_properties and ir_properties[0].value_reference == 'account.account,%d' % partner.property_account_receivable.id:
                     vals.update(
                         property_account_receivable=self._create_new_account(partner.customer_type, partner),
@@ -271,7 +271,7 @@ class ResPartner(models.Model):
 
             if partner.supplier and partner.supplier_type and partner.force_create_supplier_account:
                 # Create a new account only if the partner is using the default account
-                ir_properties = ir_property_obj.search([('fields_id', '=', supplier_field.id), ('res_id', '=', False)])
+                ir_properties = ir_property_obj.search([('company_id', '=', self.env.user.company_id.id), ('fields_id', '=', supplier_field.id), ('res_id', '=', False)])
                 if ir_properties and ir_properties[0].value_reference == 'account.account,%d' % partner.property_account_payable.id:
                     vals.update(
                         property_account_payable=self._create_new_account(partner.supplier_type, partner),
