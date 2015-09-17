@@ -146,24 +146,26 @@ class ResPartner(models.Model):
         :rtype: str
         """
         seq_patern = sequence.prefix
-        if seq_patern.find('{') >= 0:
-            prefix = seq_patern[:seq_patern.index('{')]
-            suffix = seq_patern[seq_patern.index('}') + 1:]
-            body = seq_patern[len(prefix) + 1:][:len(seq_patern) - len(prefix) - len(suffix) - 2]
-            ar_args = body.split('|')
+        if '{' in seq_patern:
+            number_parts = []
+            for part in seq_patern.split('{'):
+                elements = part.split('}')
+                if(len(elements) > 1):
+                    field_info = elements[0].split('|')
+                    value = getattr(partner, field_info[0]) or ''
+                    modificator = Modificator(value)
+                    for function_name in field_info[1:]:
+                        if not function_name:
+                            continue
+                        modificator_function = getattr(modificator, function_name)
+                        value = modificator_function()
+                        modificator.setval(value)
 
-            # partner field is always first
-            partner_value = getattr(partner, ar_args[0])
-            if partner_value:
-                # Modificators
-                mdf = Modificator(partner_value)
-                for i in range(1, len(ar_args)):
-                    mdf_funct = getattr(mdf, ar_args[i])
-                    partner_value = mdf_funct()
-                    mdf.setval(partner_value)
+                    number_parts.append(value)
 
-            account_number = '%s%s%s' % (prefix or '', partner_value or '', suffix or '')
-            # is there internal sequence ?
+                number_parts.append(elements[-1])
+
+            account_number = ''.join(number_parts)
             pos_iseq = account_number.find('#')
             if pos_iseq >= 0:
                 rootpart = account_number[:pos_iseq]
