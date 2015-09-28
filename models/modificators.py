@@ -85,6 +85,9 @@ class Modificator(object):
     def truncate6(self):
         return self.strVal[:6]
 
+    def truncate7(self):
+        return self.strVal[:7]
+
     def truncate12(self):
         return self.strVal[:12]
 
