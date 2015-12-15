@@ -247,17 +247,17 @@ class ResPartner(models.Model):
         if 'name' in vals:
             account_move_line_obj = self.env['account.move.line']
             for partner in self:
-                if partner.customer and self.customer_type.lock_partner_name and account_move_line_obj.search([('account_id', '=', partner.property_account_receivable.id)]):
+                if partner.customer and self.customer_type.lock_partner_name and account_move_line_obj.search([('account_id', '=', partner.property_account_receivable_id.id)]):
                     raise exceptions.Warning(_('Error'), _('You cannot change partner\'s name when his account has moves'))
-                if partner.supplier and self.supplier_type.lock_partner_name and account_move_line_obj.search([('account_id', '=', partner.property_account_payable.id)]):
+                if partner.supplier and self.supplier_type.lock_partner_name and account_move_line_obj.search([('account_id', '=', partner.property_account_payable_id.id)]):
                     raise exceptions.Warning(_('Error'), _('You cannot change partner\'s name when his account has moves'))
 
         # Call super for standard behaviour
         res = super(ResPartner, self).write(vals)
 
         # Search customer and supplier fields, to be able to check if there is a default value while searching on ir.property
-        customer_field = model_fields_obj.search([('model', '=', 'res.partner'), ('name', '=', 'property_account_receivable')])[0]
-        supplier_field = model_fields_obj.search([('model', '=', 'res.partner'), ('name', '=', 'property_account_payable')])[0]
+        customer_field = model_fields_obj.search([('model', '=', 'res.partner'), ('name', '=', 'property_account_receivable_id')])[0]
+        supplier_field = model_fields_obj.search([('model', '=', 'res.partner'), ('name', '=', 'property_account_payable_id')])[0]
 
         for partner in self:
             vals = {}
@@ -265,18 +265,18 @@ class ResPartner(models.Model):
             if partner.customer and partner.customer_type and partner.force_create_customer_account:
                 # Create a new account only if the partner is using the default account
                 ir_properties = ir_property_obj.search([('company_id', '=', self.env.user.company_id.id), ('fields_id', '=', customer_field.id), ('res_id', '=', False)])
-                if ir_properties and ir_properties[0].value_reference == 'account.account,%d' % partner.property_account_receivable.id:
+                if ir_properties and ir_properties[0].value_reference == 'account.account,%d' % partner.property_account_receivable_id.id:
                     vals.update(
-                        property_account_receivable=self._create_new_account(partner.customer_type, partner),
+                        property_account_receivable_id=self._create_new_account(partner.customer_type, partner),
                         force_create_customer_account=False,
                     )
 
             if partner.supplier and partner.supplier_type and partner.force_create_supplier_account:
                 # Create a new account only if the partner is using the default account
                 ir_properties = ir_property_obj.search([('company_id', '=', self.env.user.company_id.id), ('fields_id', '=', supplier_field.id), ('res_id', '=', False)])
-                if ir_properties and ir_properties[0].value_reference == 'account.account,%d' % partner.property_account_payable.id:
+                if ir_properties and ir_properties[0].value_reference == 'account.account,%d' % partner.property_account_payable_id.id:
                     vals.update(
-                        property_account_payable=self._create_new_account(partner.supplier_type, partner),
+                        property_account_payable_id=self._create_new_account(partner.supplier_type, partner),
                         force_create_supplier_account=False,
                     )
 

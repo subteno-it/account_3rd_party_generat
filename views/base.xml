@@ -104,11 +104,11 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <data>
-                    <xpath expr="//field[@name='property_account_receivable']" position="after">
+                    <xpath expr="//field[@name='property_account_receivable_id']" position="after">
                         <field name="customer_type" widget="selection" attrs="{'required': [('customer','=', True)]}"/>
                         <field name="force_create_customer_account" attrs="{'invisible': [('customer','=', False)]}"/>
                     </xpath>
-                    <xpath expr="//field[@name='property_account_payable']" position="after">
+                    <xpath expr="//field[@name='property_account_payable_id']" position="after">
                         <field name="supplier_type" widget="selection" attrs="{'required': [('supplier','=', True)]}"/>
                         <field name="force_create_supplier_account" attrs="{'invisible': [('supplier','=', False)]}"/>
                     </xpath>

@@ -46,7 +46,6 @@
     'depends': [
         'base',
         'account',
-        'account_chart',
     ],
     'data': [
         'security/ir.model.access.csv',
